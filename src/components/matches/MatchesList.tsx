@@ -1,0 +1,35 @@
+import React from 'react';
+import { Trophy } from 'lucide-react';
+import MatchCard from './MatchCard';
+import type { Match } from '../../types/matches';
+
+interface Props {
+  matches: Match[];
+  onPredict: (match: Match) => void;
+  isLoading?: boolean;
+}
+
+export default function MatchesList({ matches, onPredict, isLoading }: Props) {
+  if (matches.length === 0) {
+    return (
+      <div className="text-center py-12 bg-gray-50 rounded-lg">
+        <Trophy className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-sm font-semibold text-gray-900">No upcoming matches</h3>
+        <p className="mt-1 text-sm text-gray-500">Check back later for new fixtures</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {matches.map((match) => (
+        <MatchCard
+          key={match.id}
+          match={match}
+          onPredict={onPredict}
+          isLoading={isLoading}
+        />
+      ))}
+    </div>
+  );
+}
