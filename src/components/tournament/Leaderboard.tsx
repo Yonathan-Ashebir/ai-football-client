@@ -42,7 +42,7 @@ export default function Leaderboard({ scores }: Props) {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-lg font-semibold text-emerald-600">
+              <p className="text-lg font-semibold text-primary-600">
                 {(score.accuracy * 100).toFixed(1)}%
               </p>
             </div>

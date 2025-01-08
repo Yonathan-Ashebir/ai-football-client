@@ -17,7 +17,7 @@ export default function MatchHistorySelector({ value, onChange }: Props) {
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <History className="w-5 h-5 text-emerald-600" />
+          <History className="w-5 h-5 text-primary-600" />
           <span className="font-medium text-gray-900">Recent Match History</span>
         </div>
         <div className="relative group">
@@ -35,7 +35,7 @@ export default function MatchHistorySelector({ value, onChange }: Props) {
             onClick={() => onChange(option.value)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               value === option.value
-                ? 'bg-emerald-100 text-emerald-700'
+                ? 'bg-primary-100 text-primary-700'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >

@@ -11,7 +11,7 @@ export const demoDatasets: Dataset[] = [
       'Goals', 'Assists', 'Expected Goals (xG)', 'Expected Assists (xA)',
       'Shots on Target', 'Pass Completion %', 'Yellow Cards', 'Red Cards'
     ],
-    uploadDate: '2024-03-15T08:30:00Z'
+    uploaded_at: '2024-03-15T08:30:00Z'
   },
   {
     id: 'ds-002',
@@ -23,7 +23,7 @@ export const demoDatasets: Dataset[] = [
       'Away Score', 'Stadium', 'Attendance', 'Referee', 'Possession %',
       'Shots', 'Shots on Target', 'Corners', 'Fouls'
     ],
-    uploadDate: '2024-03-14T15:45:00Z'
+    uploaded_at: '2024-03-14T15:45:00Z'
   },
   {
     id: 'ds-003',
@@ -35,7 +35,7 @@ export const demoDatasets: Dataset[] = [
       'Goals Scored', 'Goals Conceded', 'Clean Sheets', 'Points',
       'Expected Goals (xG)', 'Expected Points (xP)', 'Form Last 5'
     ],
-    uploadDate: '2024-03-13T11:20:00Z'
+    uploaded_at: '2024-03-13T11:20:00Z'
   },
   {
     id: 'ds-004',
@@ -47,7 +47,7 @@ export const demoDatasets: Dataset[] = [
       'Transfer Fee', 'Market Value', 'Contract Length', 'Transfer Date',
       'Season', 'League From', 'League To'
     ],
-    uploadDate: '2024-03-12T09:15:00Z'
+    uploaded_at: '2024-03-12T09:15:00Z'
   },
   {
     id: 'ds-005',
@@ -59,6 +59,6 @@ export const demoDatasets: Dataset[] = [
       'Expected Return', 'Games Missed', 'Previous Similar Injuries',
       'Recovery Progress', 'Treatment Plan'
     ],
-    uploadDate: '2024-03-11T14:40:00Z'
+    uploaded_at: '2024-03-11T14:40:00Z'
   }
 ];

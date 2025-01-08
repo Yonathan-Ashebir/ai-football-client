@@ -6,14 +6,12 @@ interface Props {
   matchHistory: number;
   favoriteTeam: string | null;
   teams: TournamentTeam[];
-  disabled?: boolean;
 }
 
 export default function TournamentSettings({
   matchHistory,
   favoriteTeam,
-  teams,
-  disabled
+  teams
 }: Props) {
   const favoriteTeamObj = teams.find(team => team.id === favoriteTeam);
 

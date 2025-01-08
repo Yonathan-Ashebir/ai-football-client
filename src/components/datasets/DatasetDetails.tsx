@@ -37,7 +37,7 @@ export default function DatasetDetails({ name, type, size, columns, uploadDate }
     <div className="bg-white rounded-lg shadow-sm p-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-emerald-600" />
+          <FileText className="w-5 h-5 text-primary-600" />
           <h3 className="font-medium text-gray-900">{name}</h3>
         </div>
         <span className="text-sm text-gray-500">{formatFileSize(size)}</span>

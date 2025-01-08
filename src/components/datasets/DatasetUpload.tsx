@@ -3,19 +3,20 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 
 interface Props {
-  onUpload: (file: File, name: string) => void;
+  onUpload: (file: File, name: string, type: string) => void;
 }
 
 export default function DatasetUpload({ onUpload }: Props) {
   const [name, setName] = React.useState('');
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string>('');
+  const [type, setType] = React.useState<'match'| 'player_statistics'>('match') /* It is better to map it to some text with capitals & more visulallu apealing */
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        setError('File size must be less than 10MB');
+        setError('File size must be less than 300MB');
         return;
       }
       setSelectedFile(file);
@@ -35,7 +36,7 @@ export default function DatasetUpload({ onUpload }: Props) {
       setError('Please provide both a file and a name');
       return;
     }
-    onUpload(selectedFile, name.trim());
+    onUpload(selectedFile, name.trim(), type);
     setSelectedFile(null);
     setName('');
   };
@@ -52,7 +53,7 @@ export default function DatasetUpload({ onUpload }: Props) {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
             placeholder="Enter dataset name"
           />
         </div>
@@ -76,7 +77,7 @@ export default function DatasetUpload({ onUpload }: Props) {
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-                ${isDragActive ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300 hover:border-emerald-500'}`}
+                ${isDragActive ? 'border-primary-500 bg-primary-50' : 'border-gray-300 hover:border-primary-500'}`}
             >
               <input {...getInputProps()} />
               <Upload className="mx-auto h-12 w-12 text-gray-400" />
@@ -97,7 +98,7 @@ export default function DatasetUpload({ onUpload }: Props) {
         <button
           type="submit"
           disabled={!selectedFile || !name.trim()}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Upload Dataset
         </button>

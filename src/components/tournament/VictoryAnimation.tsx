@@ -41,7 +41,7 @@ export default function VictoryAnimation({ winner, onClose }: Props) {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Tournament Champion!
         </h2>
-        <p className="text-xl text-emerald-600 font-semibold mb-4">
+        <p className="text-xl text-primary-600 font-semibold mb-4">
           {winner.name}
         </p>
         
@@ -52,7 +52,7 @@ export default function VictoryAnimation({ winner, onClose }: Props) {
 
         <button
           onClick={onClose}
-          className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          className="mt-4 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
           Close
         </button>

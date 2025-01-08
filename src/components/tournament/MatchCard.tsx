@@ -1,6 +1,5 @@
-import React from 'react';
-import { Trophy } from 'lucide-react';
-import type { MatchPrediction } from '../../types/tournament';
+import {Trophy} from 'lucide-react';
+import type {MatchPrediction} from '../../types/tournament';
 
 interface Props {
   match: MatchPrediction;
@@ -10,31 +9,31 @@ interface Props {
   onClick?: () => void;
 }
 
-export default function MatchCard({ match, result, isCurrentRound, isFinal, onClick }: Props) {
+export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Props) {
   const getTeamClasses = (isHome: boolean) => {
     const baseClasses = 'flex items-center gap-2 p-3 rounded-lg transition-all';
-    
-    if (!isCurrentRound) return `${baseClasses} text-gray-400`;
-    if (result) {
-      const isWinner = isHome ? result.homeGoals > result.awayGoals : result.awayGoals > result.homeGoals;
-      return `${baseClasses} ${isWinner ? 'bg-emerald-500 text-white' : 'bg-gray-700 text-gray-300'}`;
-    }
-    return `${baseClasses} hover:bg-gray-700 cursor-pointer text-gray-300`;
+
+    if (isCurrentRound) return `${baseClasses} text-gray-400`;
+
+    const isWinner = (match.winner == match.homeTeam.id) == isHome
+    return `${baseClasses} ${isWinner ? 'bg-primary-500 text-white' : 'bg-gray-700 text-gray-300'}`; //todo: add is favourite color
+
+    // return `${baseClasses} hover:bg-gray-700 cursor-pointer text-gray-300`;
   };
 
   return (
-    <div 
-      onClick={isCurrentRound && !result ? onClick : undefined}
+    <div
+      onClick={isCurrentRound ? undefined : onClick}
       className={`bg-gray-800 rounded-xl p-4 ${
         isFinal ? 'border-2 border-yellow-500' : ''
       } ${isCurrentRound ? 'ring-2 ring-primary-500' : ''} ${
-        isCurrentRound && !result ? 'cursor-pointer hover:scale-105 transition-transform' : ''
+        !isCurrentRound ? 'cursor-pointer hover:scale-105 transition-transform' : ''
       }`}
     >
       <div className="text-sm font-medium text-gray-400 mb-2">
         {isFinal ? (
           <div className="flex items-center gap-1 text-yellow-500">
-            <Trophy className="w-4 h-4" />
+            <Trophy className="w-4 h-4"/>
             Final
           </div>
         ) : (
@@ -52,7 +51,7 @@ export default function MatchCard({ match, result, isCurrentRound, isFinal, onCl
             />
           </div>
           <span className="flex-1 font-medium">{match.homeTeam.name}</span>
-          {result && <span className="text-xl font-bold">{result.homeGoals}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{match.homeTeam.stats?.goalsScored}</span>}
         </div>
 
         <div className={getTeamClasses(false)}>
@@ -64,7 +63,7 @@ export default function MatchCard({ match, result, isCurrentRound, isFinal, onCl
             />
           </div>
           <span className="flex-1 font-medium">{match.awayTeam.name}</span>
-          {result && <span className="text-xl font-bold">{result.awayGoals}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{match.awayTeam.stats?.goalsScored}</span>}
         </div>
       </div>
     </div>

@@ -13,14 +13,14 @@ export default function DatasetActions({ dataset, onPreview, onDownload }: Props
     <div className="flex items-center gap-2">
       <button
         onClick={onPreview}
-        className="p-1 text-gray-600 hover:text-emerald-600 transition-colors"
+        className="p-1 text-gray-600 hover:text-primary-600 transition-colors"
         title="Preview Dataset"
       >
         <Eye className="w-5 h-5" />
       </button>
       <button
         onClick={onDownload}
-        className="p-1 text-gray-600 hover:text-emerald-600 transition-colors"
+        className="p-1 text-gray-600 hover:text-primary-600 transition-colors"
         title="Download Dataset"
       >
         <Download className="w-5 h-5" />

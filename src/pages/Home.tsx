@@ -31,11 +31,6 @@ const carouselImages = [
     url: 'https://files.structurae.net/files/photos/5180/2975_b.jpg',
     caption: 'World-Class Stadium'
   }
-  ,
-  {
-    url: 'https://files.structurae.net/files/photos/5180/2975_b.jpg',
-    caption: 'World-Class Stadium'
-  }
 ];
 
 export default function Home() {
@@ -131,11 +126,7 @@ export default function Home() {
       {/* Features Section */}
       <div className="py-24 bg-gray-50 relative">
         <div className="absolute inset-0">
-          <img 
-            src="https://files.structurae.net/files/photos/5180/2975_b.jpg" 
-            alt="Stadium" 
-            className="w-full h-full object-cover opacity-20"
-          />
+          {/* may be put some bg here */}
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

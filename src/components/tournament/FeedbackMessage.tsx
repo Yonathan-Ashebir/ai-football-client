@@ -17,12 +17,12 @@ export default function FeedbackMessage({ team, isAdvancing, onClose }: Props) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${
-          isAdvancing ? 'bg-emerald-500' : 'bg-gray-700'
+          isAdvancing ? 'bg-primary-500' : 'bg-gray-700'
         } text-white max-w-sm`}
       >
         <div className="flex items-start gap-3">
           <div className={`p-2 rounded-full ${
-            isAdvancing ? 'bg-emerald-400' : 'bg-gray-600'
+            isAdvancing ? 'bg-primary-400' : 'bg-gray-600'
           }`}>
             {isAdvancing ? (
               <Trophy className="w-5 h-5" />

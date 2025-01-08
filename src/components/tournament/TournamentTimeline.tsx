@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Clock } from 'lucide-react';
 
 interface Props {
-  currentRound: 'quarterfinal' | 'semifinal' | 'final';
+  currentRound: 'quarterfinal' | 'semifinal' | 'final' | 'results';
   progress: number;
 }
 

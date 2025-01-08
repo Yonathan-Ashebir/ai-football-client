@@ -28,7 +28,7 @@ export default function DatasetSelector({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 text-emerald-600 animate-spin" />
+        <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
       </div>
     );
   }
@@ -43,11 +43,11 @@ export default function DatasetSelector({
             onClick={() => onSelect(dataset.id)}
             className={`w-full flex items-center p-3 rounded-lg border transition-all ${
               selectedDataset === dataset.id
-                ? 'border-emerald-500 bg-emerald-50'
-                : 'border-gray-200 hover:border-emerald-500'
+                ? 'border-primary-500 bg-primary-50'
+                : 'border-gray-200 hover:border-primary-500'
             }`}
           >
-            <Database className="w-5 h-5 text-emerald-600 mr-3" />
+            <Database className="w-5 h-5 text-primary-600 mr-3" />
             <div className="text-left">
               <p className="font-medium text-gray-900">{dataset.name}</p>
               <p className="text-sm text-gray-500">{dataset.type}</p>

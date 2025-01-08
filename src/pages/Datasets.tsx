@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
 import DatasetUpload from '../components/datasets/DatasetUpload';
 import DatasetList from '../components/datasets/DatasetList';
 import DatasetHeader from '../components/datasets/DatasetHeader';
 import ErrorDisplay from '../components/common/ErrorDisplay';
-import { useDatasets } from '../hooks/useDatasets';
+import {useDatasets} from '../hooks/useDatasets';
 
 export default function Datasets() {
   const {
@@ -16,7 +16,6 @@ export default function Datasets() {
   } = useDatasets();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await refreshDatasets();
@@ -34,7 +33,7 @@ export default function Datasets() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div>
-          <DatasetUpload onUpload={uploadDataset} />
+          <DatasetUpload onUpload={uploadDataset}/>
         </div>
         <div className="lg:col-span-2">
           <DatasetHeader
@@ -43,9 +42,9 @@ export default function Datasets() {
             onRefresh={handleRefresh}
             isRefreshing={isRefreshing}
           />
-          
+
           {error ? (
-            <ErrorDisplay 
+            <ErrorDisplay
               message={error}
               onRetry={refreshDatasets}
             />

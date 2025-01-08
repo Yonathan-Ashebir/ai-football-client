@@ -1,11 +1,11 @@
 import React from 'react';
-import { Search, Users } from 'lucide-react';
-import { premierLeagueTeams } from '../../data/teams';
+import {Search} from 'lucide-react';
 import MatchHistoryInput from './MatchHistoryInput';
 import FavoriteTeamSelector from './FavoriteTeamSelector';
-import type { TournamentTeam } from '../../types/tournament';
+import type {TournamentTeam} from '../../types/tournament';
 
 interface Props {
+  allTeams: TournamentTeam[];
   selectedTeams: TournamentTeam[];
   matchHistory: number;
   favoriteTeam: string | null;
@@ -16,17 +16,18 @@ interface Props {
 }
 
 export default function TeamSelector({
-  selectedTeams,
-  matchHistory,
-  favoriteTeam,
-  onMatchHistoryChange,
-  onTeamSelect,
-  onTeamRemove,
-  onFavoriteTeamSelect
-}: Props) {
+                                       allTeams,
+                                       selectedTeams,
+                                       matchHistory,
+                                       favoriteTeam,
+                                       onMatchHistoryChange,
+                                       onTeamSelect,
+                                       onTeamRemove,
+                                       onFavoriteTeamSelect
+                                     }: Props) {
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  const availableTeams = premierLeagueTeams.filter(
+  const availableTeams = allTeams.filter(
     team => !selectedTeams.find(selected => selected.id === team.id)
   );
 
@@ -34,18 +35,9 @@ export default function TeamSelector({
     team.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleTeamSelect = (team: typeof premierLeagueTeams[0]) => {
+  const handleTeamSelect = (team: TournamentTeam) => {
     if (selectedTeams.length < 8) {
-      onTeamSelect({
-        id: team.id,
-        name: team.name,
-        logoUrl: team.logoUrl,
-        stats: {
-          winProbability: Math.random(),
-          goalsScored: Math.floor(Math.random() * 50),
-          goalsConceded: Math.floor(Math.random() * 30),
-        }
-      });
+      onTeamSelect(team);
     }
   };
 
@@ -57,7 +49,7 @@ export default function TeamSelector({
       />
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"/>
         <input
           type="text"
           placeholder="Search teams..."
@@ -74,7 +66,7 @@ export default function TeamSelector({
             className="flex items-center justify-between p-2 bg-primary-50 rounded-lg"
           >
             <div className="flex items-center gap-2">
-              <img src={team.logoUrl} alt={team.name} className="w-6 h-6" />
+              <img src={team.logoUrl} alt={team.name} className="w-6 h-6"/>
               <span className="text-sm font-medium text-primary-700">{team.name}</span>
             </div>
             <button
@@ -103,7 +95,7 @@ export default function TeamSelector({
               onClick={() => handleTeamSelect(team)}
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg"
             >
-              <img src={team.logoUrl} alt={team.name} className="w-6 h-6" />
+              <img src={team.logoUrl} alt={team.name} className="w-6 h-6"/>
               <span>{team.name}</span>
             </button>
           ))}

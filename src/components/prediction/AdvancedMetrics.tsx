@@ -19,7 +19,7 @@ export default function AdvancedMetrics({ homeTeam, awayTeam, metrics, isLoading
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-        <Target className="w-5 h-5 text-emerald-600" />
+        <Target className="w-5 h-5 text-primary-600" />
         Advanced Metrics
       </h3>
 
@@ -34,11 +34,11 @@ export default function AdvancedMetrics({ homeTeam, awayTeam, metrics, isLoading
         </div>
         <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="absolute inset-y-0 left-0 bg-emerald-500 transition-all duration-500"
+            className="absolute inset-y-0 left-0 bg-primary-500 transition-all duration-500"
             style={{ width: `${metrics.bothTeamsScoring * 100}%` }}
           />
         </div>
-        <div className="mt-2 text-right font-semibold text-emerald-600">
+        <div className="mt-2 text-right font-semibold text-primary-600">
           {(metrics.bothTeamsScoring * 100).toFixed(1)}%
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function AdvancedMetrics({ homeTeam, awayTeam, metrics, isLoading
       {/* Expected Goals */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Goal className="w-5 h-5 text-emerald-600" />
+          <Goal className="w-5 h-5 text-primary-600" />
           <h4 className="font-medium text-gray-900">Expected Goals (xG)</h4>
         </div>
         <div className="h-64">

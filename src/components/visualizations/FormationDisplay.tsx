@@ -15,7 +15,7 @@ interface Props {
 
 export default function FormationDisplay({ formation, showNumbers = true }: Props) {
   return (
-    <div className="relative w-full h-[600px] bg-emerald-900 rounded-lg overflow-hidden">
+    <div className="relative w-full h-[600px] bg-primary-900 rounded-lg overflow-hidden">
       <div className="absolute inset-0 bg-[url('/pitch-lines.svg')] bg-cover opacity-20" />
       
       {formation.map((player) => (
@@ -33,7 +33,7 @@ export default function FormationDisplay({ formation, showNumbers = true }: Prop
           <div className="relative">
             <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center">
               {showNumbers && (
-                <span className="text-emerald-900 font-bold">{player.number}</span>
+                <span className="text-primary-900 font-bold">{player.number}</span>
               )}
             </div>
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">

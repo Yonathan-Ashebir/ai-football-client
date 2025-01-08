@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://postman-rest-api-learner.glitch.me';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -12,21 +12,46 @@ const api = axios.create({
 // Datasets
 export const datasetsApi = {
   list: () => api.get('/datasets/list'),
-  
-  preview: (id: string, params: { start_row: number; end_row: number; columns: string }) =>
-    api.get(`/datasets/preview/${id}`, { params }),
-  
-  upload: (file: File) => {
+
+  preview: (id: string,
+            {
+              startRow: start_row,
+              endRow: end_row,
+              columns,
+              sortColumns: sort_columns,
+              sortOrders: sort_orders
+            }: {
+              startRow: number;
+              endRow: number;
+              columns: string[];
+              sortColumns: string[];
+              sortOrders: string[];
+            }) =>
+    api.get(`/datasets/preview/${id}`, {
+      params: {
+        start_row,
+        end_row,
+        columns: columns.join(','),
+        sort_columns: sort_columns.join(','),
+        sort_orders: sort_orders.join(',')
+      }
+    }),
+
+  upload: (file: File, newName: string, type: string) => {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('new_name', newName);
+    formData.append('type', type);
     return api.post('/datasets/upload_one', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {'Content-Type': 'multipart/form-data'},
     });
   },
-  
+
   delete: (id: string) => api.post(`/datasets/delete/${id}`),
-  
-  download: (id: string) => api.get(`/datasets/download/${id}`, { responseType: 'blob' }),
+
+  download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}),
+
+  getDownloadLink: (id: string) => `${API_BASE_URL}datasets/download/${id}`,
 };
 
 // Models
@@ -48,5 +73,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default api;

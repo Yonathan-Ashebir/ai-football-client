@@ -15,7 +15,7 @@ export default function HeadToHeadStats({ stats, homeTeam, awayTeam }: Props) {
       
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="text-center">
-          <div className="text-4xl font-bold text-emerald-600">{stats.homeTeamWins}</div>
+          <div className="text-4xl font-bold text-primary-600">{stats.homeTeamWins}</div>
           <div className="text-sm text-gray-600">{homeTeam} Wins</div>
         </div>
         <div className="text-center">

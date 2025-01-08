@@ -4,10 +4,5 @@ export interface Dataset {
   size: number;
   type: string;
   columns: string[];
-  uploadDate: string;
-}
-
-export interface SortConfig {
-  key: string;
-  direction: 'asc' | 'desc';
+  uploaded_at: string;
 }

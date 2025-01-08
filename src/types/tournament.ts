@@ -2,10 +2,9 @@ export interface TournamentTeam {
   id: string;
   name: string;
   logoUrl?: string;
-  stats: {
+  stats?: {
     winProbability: number;
     goalsScored: number;
-    goalsConceded: number;
   };
 }
 
@@ -14,9 +13,8 @@ export interface MatchPrediction {
   round: 'quarterfinal' | 'semifinal' | 'final';
   homeTeam: TournamentTeam;
   awayTeam: TournamentTeam;
-  userPrediction?: string; // Team ID
-  aiPrediction?: string; // Team ID
-  winner?: string; // Team ID
+  message?: string;
+  winner?: string;
 }
 
 export interface UserPredictionScore {
@@ -25,4 +23,9 @@ export interface UserPredictionScore {
   correctPredictions: number;
   totalPredictions: number;
   accuracy: number;
+}
+
+export const getPreviousRounds = (round: string) => {
+  const rounds = ['quarterfinal', 'semifinal', 'final', 'results']
+  return rounds.slice(0, rounds.indexOf(round))
 }
