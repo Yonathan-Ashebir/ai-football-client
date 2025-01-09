@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {FileText, Trash2, AlertCircle, Download, Eye} from 'lucide-react';
 import type {Dataset} from '../../types/dataset';
 import DatasetPreview from './DatasetPreview';
@@ -70,7 +70,7 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
       {datasets.map((dataset) => (
         <div
           key={dataset.id}
-          className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow"
+          className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow flex flex-col justify-between"
         >
           <div className="p-6">
             <div className="flex items-start justify-between">
@@ -83,7 +83,7 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
 
             <div className="mt-4 space-y-2">
               <div className="text-sm text-gray-600">
-                Type: <span className="font-medium">{dataset.type}</span>
+                Type: <span className="font-medium">{dataset.type_label}</span>
               </div>
               <div className="text-sm text-gray-600">
                 Uploaded {formatDistanceToNow(dataset.uploaded_at)}

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
-import TeamPrediction from './pages/TeamPrediction';
+import MatchPrediction from './pages/MatchPrediction.tsx';
 import PlayerAnalysis from './pages/PlayerAnalysis';
 import Datasets from './pages/Datasets';
 import Models from './pages/Models';
@@ -18,7 +18,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/team-prediction" element={<TeamPrediction />} />
+            <Route path="/match-prediction" element={<MatchPrediction />} />
             <Route path="/player-analysis" element={<PlayerAnalysis />} />
             <Route path="/datasets" element={<Datasets />} />
             <Route path="/models" element={<Models />} />

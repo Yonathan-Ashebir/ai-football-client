@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { UserCircle, Upload, Loader2, Check, AlertCircle, Brain, Search } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { demoModels } from '../data/demoModels';
-import type { Model } from '../types/model';
+import {Model, ModelStatus, ModelTypes} from '../types/model';
 
 interface PlayerAttribute {
   name: string;
@@ -37,8 +37,7 @@ export default function PlayerStats() {
   const [models, setModels] = useState<Model[]>([]);
 
   const availableModels = models.filter(model => 
-    model.type === 'player-position' && 
-    model.status === 'completed' &&
+    model.type === ModelTypes.PLAYER_STATISTICS_WITH_SCALER &&
     model.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

@@ -1,39 +1,20 @@
 import React from 'react';
 import { Brain, Search, Loader2 } from 'lucide-react';
-import type { Model } from '../../types/model';
+import {Model, ModelStatus} from '../../types/model';
 
 interface Props {
   models: Model[];
-  selectedModel: Model | null;
+  selectedModel: Model | undefined;
   onSelect: (model: Model) => void;
-  isLoading: boolean;
-  error: string | null;
 }
 
-export default function ModelSelector({ models, selectedModel, onSelect, isLoading, error }: Props) {
+export default function ModelSelector({ models, selectedModel, onSelect}: Props) {
   const [searchQuery, setSearchQuery] = React.useState('');
   
   const filteredModels = models.filter(model => 
     model.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    model.type === 'team-prediction' &&
-    model.status === 'completed'
+    model.status === ModelStatus.READY
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 p-4 rounded-lg">
-        <p className="text-red-700">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -53,6 +34,7 @@ export default function ModelSelector({ models, selectedModel, onSelect, isLoadi
           <button
             key={model.id}
             onClick={() => onSelect(model)}
+            type="button"
             className={`w-full flex items-center p-4 rounded-lg border transition-all ${
               selectedModel?.id === model.id
                 ? 'border-primary-500 bg-primary-50'

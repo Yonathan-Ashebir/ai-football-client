@@ -17,7 +17,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/team-prediction" className="text-gray-600 hover:text-primary-600">
+                <a href="/match-prediction" className="text-gray-600 hover:text-primary-600">
                   Team Prediction
                 </a>
               </li>

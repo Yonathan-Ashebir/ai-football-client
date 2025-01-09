@@ -9,9 +9,14 @@ const api = axios.create({
   },
 });
 
+export type DatasetType = 'Match Results' | 'Player Statistics'
+export const datasetTypeMap  = {'Player Statistics': 'player_statistics', 'Match Results': 'match'}
+
 // Datasets
 export const datasetsApi = {
-  list: () => api.get('/datasets/list'),
+  list: (datasetTypes:string[] = []) => api.get('/datasets/list', {
+    params: {'dataset_types': datasetTypes.join(',')}
+  }).then(res => res.data),
 
   preview: (id: string,
             {
@@ -35,21 +40,22 @@ export const datasetsApi = {
         sort_columns: sort_columns.join(','),
         sort_orders: sort_orders.join(',')
       }
-    }),
+    }).then(resp => resp.data),
 
-  upload: (file: File, newName: string, type: string) => {
+  upload: async (file: File, newName: string, type: DatasetType) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('new_name', newName);
-    formData.append('type', type);
-    return api.post('/datasets/upload_one', formData, {
+    formData.append('type', datasetTypeMap[type]);
+    let resp = await api.post('/datasets/upload_one', formData, {
       headers: {'Content-Type': 'multipart/form-data'},
     });
+    return await resp.data;
   },
 
-  delete: (id: string) => api.post(`/datasets/delete/${id}`),
+  delete: (id: string) => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
 
-  download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}),
+  download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
 
   getDownloadLink: (id: string) => `${API_BASE_URL}datasets/download/${id}`,
 };
@@ -58,9 +64,34 @@ export const datasetsApi = {
 export const modelsApi = {
   create: (data: {
     datasetId: string;
-    modelType: 'team-prediction' | 'player-position';
+    modelType: 'match-prediction' | 'player-position';
     parameters?: Record<string, any>;
   }) => api.post('/models/create_one', data),
+
+  /**
+   * Fetch the list of models for the current user.
+   * @returns {Promise} Resolves with the list of models.
+   */
+  async list(): Promise<any> {
+    let response = await api.get('/models/list');
+    return (await response.data)['models'];
+  },
+
+  /**
+   * Delete a specific model by ID.
+   * @param {number} modelId - The ID of the model to delete.
+   * @returns {Promise} Resolves with a success message.
+   */
+
+  async delete(modelId: string) {
+    let response = await api.delete(`/models/delete/${modelId}`);
+    return await response.data;
+  },
+
+  getModelTeams: async (modelId: string) => {
+    const response = await api.get(`/models/get_model_teams/${modelId}`);
+    return response.data.teams; // Assuming API response has a "teams" field
+  },
 };
 
 // Error handler

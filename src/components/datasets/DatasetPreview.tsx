@@ -1,7 +1,9 @@
-import React, {useMemo, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {ChevronDown, ChevronUp, Loader2} from 'lucide-react';
 import {useResource} from "../../hooks/useResource.ts";
 import {datasetsApi} from "../../utils/api.ts";
+import {Dataset} from "../../types/dataset.ts";
+import ErrorDisplay from "../common/ErrorDisplay.tsx";
 
 interface Props {
   dataset: Dataset;
@@ -15,19 +17,15 @@ export default function DatasetPreview({dataset, onClose}: Props) {
   });
   const [sortColumns, setSortColumns] = useState<string[]>([]);
   const [sortOrders, setSortOrders] = useState<string[]>([]);
-  const [{data:{
-    rows,
-    total_count: totalCount
-  }}, _, loading] = useResource(() => datasetsApi.preview(dataset.id, {
+  const {resource :{rows, total_count: totalCount} , isLoading, error, reload} = useResource<{rows: string[][], total_count: number}>(() => datasetsApi.preview(dataset.id, {
     startRow: loadedStart,
     endRow: loadedEnd,
     columns: dataset.columns,
     sortColumns,
     sortOrders
-  }), [loadedStart, loadedEnd, sortColumns, sortOrders], {default: {data: {rows: [], total_count: 0}}});
-  console.log('rows', rows, 'total_count', totalCount);
-  const [currentPage, setCurrentPage] = useState(0);
+  }), [loadedStart, loadedEnd, sortColumns, sortOrders], {initialValue: {rows: [], total_count: 0}});
 
+  const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
@@ -46,7 +44,6 @@ export default function DatasetPreview({dataset, onClose}: Props) {
       })
     }
   }
-
 
   const handleSort = (key: string) => {
     const index = sortColumns.indexOf(key)
@@ -71,6 +68,7 @@ export default function DatasetPreview({dataset, onClose}: Props) {
     else return rows.slice(pageStart - loadedStart, pageEnd - loadedStart);
   }, [pageStart, pageEnd, loadedStart, loadedEnd, rows]);
 
+  console.log("currentData",currentData,"isLoading" ,isLoading,"error",error)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col">
@@ -85,11 +83,7 @@ export default function DatasetPreview({dataset, onClose}: Props) {
         </div>
 
         <div className="flex-1 overflow-auto">
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <Loader2 className="w-8 h-8 text-primary-600 animate-spin"/>
-            </div>
-          ) : (
+          {currentData.length > 0 && !isLoading &&
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
               <tr>
@@ -123,7 +117,13 @@ export default function DatasetPreview({dataset, onClose}: Props) {
               ))}
               </tbody>
             </table>
-          )}
+          }
+          {isLoading &&
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="w-8 h-8 text-primary-600 animate-spin"/>
+            </div>
+          }
+          {error && <ErrorDisplay message={error.message} onRetry={reload}/>}
         </div>
 
         <div className="p-4 border-t flex items-center justify-between">

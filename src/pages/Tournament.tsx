@@ -10,7 +10,7 @@ import MatchResult from '../components/tournament/MatchResult';
 import {useTournament} from '../hooks/useTournament';
 import {demoModels} from '../data/demoModels';
 import type {MatchPrediction, TournamentTeam} from '../types/tournament';
-import type {Model} from '../types/model';
+import {Model, ModelStatus, ModelTypes} from '../types/model';
 import TeamFailedAnimation from "../components/tournament/TeamFailedAnimation.tsx";
 
 export default function Tournament() {
@@ -31,8 +31,8 @@ export default function Tournament() {
   const [teamsLoadError, setTeamsLoadError] = useState<string | null>(null);
 
   const availableModels = models.filter(model =>
-    model.type === 'team-prediction' &&
-    model.status === 'completed' &&
+    model.type === ModelTypes.NUMBER_OF_GOALS_WITH_SCALER &&
+    model.status === ModelStatus.READY &&
     model.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

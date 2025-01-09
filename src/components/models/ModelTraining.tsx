@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Brain, ArrowLeft } from 'lucide-react';
+import React, {useState} from 'react';
+import {ArrowLeft, Brain} from 'lucide-react';
 import ModelTypeSelector from './ModelTypeSelector';
 import DatasetSelector from './DatasetSelector';
 import ColumnSelector from './ColumnSelector';
-import type { Dataset } from '../../types/dataset';
-import type { ModelType } from '../../types/model';
+import {Dataset, DatasetTypes} from '../../types/dataset';
+import type {ModelType} from '../../types/model';
+import {useResource} from "../../hooks/useResource.ts";
+import {datasetsApi} from "../../utils/api.ts";
+import ErrorDisplay from "../common/ErrorDisplay.tsx";
 
 interface Props {
-  datasets: Dataset[];
   onTrain: (config: TrainingConfig) => void;
 }
 
@@ -18,22 +20,30 @@ interface TrainingConfig {
   name: string;
 }
 
-export default function ModelTraining({ datasets, onTrain }: Props) {
-  const [step, setStep] = useState<'type' | 'dataset' | 'name' | 'columns'>('type');
-  const [modelType, setModelType] = useState<ModelType | null>(null);
+const getDatasetTypesForModelType = (modelType: string): string[] => {
+  switch (modelType) {
+    case 'match-prediction':
+      return [DatasetTypes.MATCHES]
+    default:
+      return [DatasetTypes.PLAYER_STATS]
+  }
+}
+
+export default function ModelTraining({onTrain}: Props) {
+  const [step, setStep] = useState<'dataset' | 'name' | 'columns'>('dataset');
+  const [modelType, setModelType] = useState<ModelType>('match-prediction');
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [modelName, setModelName] = useState('');
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const dataset = datasets.find(d => d.id === selectedDataset);
+  const {
+    resource: datasets,
+    isLoading,
+    reload, error
+  } = useResource<Dataset[]>(() => datasetsApi.list(getDatasetTypesForModelType(modelType)), [modelType], {initialValue: []})
 
   const handleBack = () => {
     switch (step) {
-      case 'dataset':
-        setStep('type');
-        setModelType(null);
-        break;
       case 'name':
         setStep('dataset');
         setSelectedDataset(null);
@@ -45,19 +55,14 @@ export default function ModelTraining({ datasets, onTrain }: Props) {
     }
   };
 
-  const handleModelTypeSelect = async (type: ModelType) => {
-    setModelType(type);
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    setStep('dataset');
-  };
-
-  const handleDatasetSelect = async (datasetId: string) => {
+  const handleModelSelection = (m: ModelType) => {
+    if (m !== modelType) {
+      setModelType(m);
+      setStep('dataset')
+    }
+  }
+  const handleDatasetSelect = (datasetId: string) => {
     setSelectedDataset(datasetId);
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
     setStep('name');
   };
 
@@ -77,7 +82,7 @@ export default function ModelTraining({ datasets, onTrain }: Props) {
 
   const handleSubmit = () => {
     if (!modelType || !selectedDataset || !modelName.trim() || selectedColumns.length === 0) return;
-    
+
     onTrain({
       modelType,
       datasetId: selectedDataset,
@@ -90,15 +95,15 @@ export default function ModelTraining({ datasets, onTrain }: Props) {
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Brain className="w-6 h-6 text-primary-600" />
+          <Brain className="w-6 h-6 text-primary-600"/>
           <h2 className="text-xl font-semibold text-gray-900">Train New Model</h2>
         </div>
-        {step !== 'type' && (
+        {step !== 'dataset' && (
           <button
             onClick={handleBack}
             className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4"/>
             Back
           </button>
         )}
@@ -107,20 +112,23 @@ export default function ModelTraining({ datasets, onTrain }: Props) {
       <div className="space-y-8">
         <ModelTypeSelector
           selectedType={modelType}
-          onSelect={handleModelTypeSelect}
+          onSelect={handleModelSelection}
         />
 
-        {step === 'dataset' && modelType && (
+        {step === 'dataset' && !error && (
           <DatasetSelector
             datasets={datasets}
             selectedDataset={selectedDataset}
-            modelType={modelType}
             onSelect={handleDatasetSelect}
             isLoading={isLoading}
           />
         )}
 
-        {step === 'name' && dataset && (
+        {step === 'dataset' && error &&
+          <ErrorDisplay message={error.message} onRetry={reload}/>
+        }
+
+        {step === 'name' && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">Name Your Model</h3>
             <div className="space-y-2">
@@ -142,9 +150,9 @@ export default function ModelTraining({ datasets, onTrain }: Props) {
           </div>
         )}
 
-        {step === 'columns' && dataset && (
+        {step === 'columns' && (
           <ColumnSelector
-            dataset={dataset}
+            dataset={datasets.find(d => d.id === selectedDataset)!}
             selectedColumns={selectedColumns}
             onColumnToggle={handleColumnToggle}
             isLoading={isLoading}

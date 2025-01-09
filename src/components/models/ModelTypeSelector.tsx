@@ -13,15 +13,15 @@ export default function ModelTypeSelector({ selectedType, onSelect }: Props) {
       <h3 className="text-lg font-medium text-gray-900">Select Model Type</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
-          onClick={() => onSelect('team-prediction')}
+          onClick={() => onSelect('match-prediction')}
           className={`p-4 text-left rounded-lg border transition-all ${
-            selectedType === 'team-prediction'
+            selectedType === 'match-prediction'
               ? 'border-primary-500 bg-primary-50'
               : 'border-gray-200 hover:border-primary-500'
           }`}
         >
           <Trophy className="h-6 w-6 text-primary-600 mb-2" />
-          <h3 className="font-medium text-gray-900">Team Prediction</h3>
+          <h3 className="font-medium text-gray-900">Match Prediction</h3>
           <p className="text-sm text-gray-500">
             Predict match outcomes and winning probabilities
           </p>

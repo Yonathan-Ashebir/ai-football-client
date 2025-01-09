@@ -1,45 +1,41 @@
-import React, { useState, useEffect } from 'react';
 import ModelTraining from '../components/models/ModelTraining';
 import ModelsList from '../components/models/ModelsList';
 import ModelsHeader from '../components/models/ModelsHeader';
-import { demoDatasets } from '../data/demoDatasets';
-import { demoModels } from '../data/demoModels';
-import type { Model } from '../types/model';
+import type {Model} from '../types/model';
+import {useResource} from "../hooks/useResource.ts";
+import {modelsApi} from "../utils/api.ts";
+import {useEffect, useState} from "react";
 
 export default function Models() {
-  const [models, setModels] = useState<Model[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const loadModels = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setModels(demoModels);
-    setIsLoading(false);
-  };
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const {
+    resource: models,
+    error,
+    reload,
+    quickUpdate
+  } = useResource<Model[]>(modelsApi.list, [], {updateInterval: 5000})
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await loadModels();
-    setIsRefreshing(false);
+    setIsRefreshing(true)
+    try {
+      await reload()
+    } finally {
+      setIsRefreshing(false)
+    }
   };
+
+
+  const handleDelete = async (id: string) => {
+    await modelsApi.delete(id)
+    quickUpdate(models!.filter(model => model.id !== id));
+  };
+
 
   useEffect(() => {
-    loadModels();
-  }, []);
-
-  const handleDelete = (id: string) => {
-    setModels(current => current.filter(model => model.id !== id));
-  };
-
-  const handleRename = (id: string, newName: string) => {
-    setModels(current => 
-      current.map(model => 
-        model.id === id ? { ...model, name: newName } : model
-      )
-    );
-  };
+    handleRefresh().then()
+  }, [])
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4">
@@ -53,8 +49,8 @@ export default function Models() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div>
           <ModelTraining
-            datasets={demoDatasets}
-            onTrain={() => {}}
+            onTrain={() => {
+            }}
           />
         </div>
         <div className="lg:col-span-2">
@@ -65,10 +61,10 @@ export default function Models() {
             isRefreshing={isRefreshing}
           />
           <ModelsList
-            models={models}
+            models={models ?? []}
+            error={error?.message}
             onDelete={handleDelete}
-            onRename={handleRename}
-            isLoading={isLoading}
+            isLoading={isRefreshing}
             searchQuery={searchQuery}
           />
         </div>

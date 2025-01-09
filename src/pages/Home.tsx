@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Trophy, UserCircle, TrendingUp, Brain, Target, Zap, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useMatches } from '../hooks/useMatches';
-import MatchesList from '../components/matches/MatchesList';
+import {Link} from 'react-router-dom';
+import {Brain, ChevronLeft, ChevronRight, TrendingUp, Trophy, UserCircle, Zap} from 'lucide-react';
+import {useMatches} from '../hooks/useMatches';
 
 const features = [
   {
@@ -81,7 +80,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
-                  to="/team-prediction"
+                  to="/match-prediction"
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   <Trophy className="w-5 h-5 mr-2" />

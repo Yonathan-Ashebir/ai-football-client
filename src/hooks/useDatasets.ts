@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
-import {datasetsApi} from "../utils/api.ts";
+import {datasetsApi, DatasetType} from "../utils/api.ts";
 import {useResource} from "./useResource.ts";
 import {Dataset} from "../types/dataset.ts";
 
 export function useDatasets() {
-  const [{data: datasets}, reload] = useResource(datasetsApi.list,[],{default: {data:[]}, updateInterval: 5000})
+  const {resource: datasets, reload, quickUpdate} = useResource<Array<Dataset>>(datasetsApi.list,[],{initialValue: [], updateInterval: 5000})
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,11 +21,10 @@ export function useDatasets() {
     }
   };
 
-  const uploadDataset = async (file: File, name: string, type: string): Dataset => {
+  const uploadDataset = async (file: File, name: string, type: DatasetType) => {
     try {
-      const newDataset = (await datasetsApi.upload(file, name, type)).data['new_dataset']
-      fetchDatasets().then()
-      return newDataset;
+      const newDataset = (await datasetsApi.upload(file, name, type))['new_dataset']
+      quickUpdate([...(datasets || []),newDataset])
     } catch (err) {
       throw new Error('Failed to upload dataset');
     }
@@ -34,7 +33,7 @@ export function useDatasets() {
   const deleteDataset = async (id: string) => {
     try {
       await datasetsApi.delete(id);
-      fetchDatasets().then()
+      quickUpdate(datasets!.filter(item => item.id !== id))
     } catch (err) {
       throw new Error('Failed to delete dataset');
     }

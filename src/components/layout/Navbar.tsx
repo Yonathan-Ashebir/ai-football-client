@@ -43,9 +43,9 @@ export default function Navbar() {
               </div>
             </Link>
             <Link
-              to="/team-prediction"
+              to="/match-prediction"
               className={`px-3 py-2 rounded-md text-sm font-medium ${
-                isActive('/team-prediction')
+                isActive('/match-prediction')
                   ? 'text-primary-600 bg-primary-50'
                   : 'text-gray-700 hover:text-primary-600'
               }`}
