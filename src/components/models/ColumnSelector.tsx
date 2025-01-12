@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, Check, Search } from 'lucide-react';
 import type { Dataset } from '../../types/dataset';
 import ColumnSelectorDialog from './ColumnSelectorDialog';

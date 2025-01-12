@@ -1,7 +1,7 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Goal, Target, AlertCircle } from 'lucide-react';
-import type { TeamMetrics } from '../../types';
+
+import {TeamMetrics} from "../../hooks/usePrediction.ts";
 
 interface Props {
   homeTeam: string;

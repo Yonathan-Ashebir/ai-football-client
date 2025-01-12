@@ -1,4 +1,3 @@
-import React from 'react';
 import PlayerStats from '../components/PlayerStats';
 
 export default function PlayerAnalysis() {

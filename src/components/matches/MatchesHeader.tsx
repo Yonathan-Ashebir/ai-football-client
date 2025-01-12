@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, RefreshCw, Filter } from 'lucide-react';
 
 interface Props {

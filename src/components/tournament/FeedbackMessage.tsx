@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Heart } from 'lucide-react';
 import type { TournamentTeam } from '../../types/tournament';

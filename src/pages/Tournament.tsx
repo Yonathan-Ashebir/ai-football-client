@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {AlertCircle, Brain, Search, Trophy, Users} from 'lucide-react';
+import {useEffect, useRef, useState} from 'react';
+import {AlertCircle, Brain, Search, Trophy} from 'lucide-react';
 import Bracket from '../components/tournament/Bracket';
 import TeamSelector from '../components/tournament/TeamSelector';
 import TournamentSettings from '../components/tournament/TournamentSettings';
@@ -8,10 +8,10 @@ import FeedbackMessage from '../components/tournament/FeedbackMessage';
 import TournamentTimeline from '../components/tournament/TournamentTimeline';
 import MatchResult from '../components/tournament/MatchResult';
 import {useTournament} from '../hooks/useTournament';
-import {demoModels} from '../data/demoModels';
 import type {MatchPrediction, TournamentTeam} from '../types/tournament';
 import {Model, ModelStatus, ModelTypes} from '../types/model';
 import TeamFailedAnimation from "../components/tournament/TeamFailedAnimation.tsx";
+import {modelsApi} from "../utils/api.ts";
 
 export default function Tournament() {
   const [selectedTeams, setSelectedTeams] = useState<TournamentTeam[]>([]);
@@ -27,8 +27,6 @@ export default function Tournament() {
   const [isLoadingModels, setIsLoadingModels] = useState(true);
   const [modelsError, setModelsError] = useState<string | null>(null);
   const [models, setModels] = useState<Model[]>([]);
-  const [allTeams, setAllTeams] = useState<TournamentTeam[]>([])
-  const [teamsLoadError, setTeamsLoadError] = useState<string | null>(null);
 
   const availableModels = models.filter(model =>
     model.type === ModelTypes.NUMBER_OF_GOALS_WITH_SCALER &&
@@ -40,8 +38,7 @@ export default function Tournament() {
     setIsLoadingModels(true);
     setModelsError(null);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setModels(demoModels);
+      setModels(await modelsApi.list(["number_of_goals_with_scaler"]));
     } catch (err) {
       setModelsError('Failed to load prediction models. Please try again.');
     } finally {
@@ -77,10 +74,12 @@ export default function Tournament() {
     }
   };
 
-  const startTournament = () => {
-    if (selectedTeams.length === 8 && selectedModel) {
-      createQuarterFinals(selectedTeams);
-      setTournamentStarted(true);
+  const startTournament = async () => {
+    if (selectedTeams.length === 8 && selectedModel && favoriteTeam) {
+      try {
+        await createQuarterFinals(selectedTeams, selectedModel, matchHistory);
+        setTournamentStarted(true);
+      }catch (error) {/*TODO*/}
     }
   };
 
@@ -90,10 +89,10 @@ export default function Tournament() {
 
   const handleClose = () => {
     resetTournament();
-    setSelectedTeams([]);
     setTournamentStarted(false);
-    setFavoriteTeam(null);
     setFeedback(null);
+    setFavoriteTeam(null);
+    setSelectedTeams([]);
     setSelectedModel(null);
   };
 
@@ -104,20 +103,10 @@ export default function Tournament() {
     loadModels();
   };
 
-  const loadTeams = () => {
-    //todo: implement api
-  }
-
-  const handleRetryLoadTeams = () => {
-    setTeamsLoadError(null);
-    setAllTeams([])
-    loadTeams()
-  }
-
 
   useEffect(() => {
     if (currentRound == 'results' || currentRound == 'quarterfinal') return
-    setFeedback({team: allTeams.find(t => t.id === favoriteTeam)!, isAdvancing: true})
+    setFeedback({team: selectedTeams.find(t => t.id === favoriteTeam)!, isAdvancing: true})
     return () => setFeedback(null)
   }, [currentRound])
 
@@ -210,58 +199,18 @@ export default function Tournament() {
                 </div>
               )}
             </div>
-
-            {selectedModel && allTeams && (
-              <>
-                <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-primary-600"/>
-                  <h2 className="text-lg font-semibold">Select Teams</h2>
-                </div>
-                <TeamSelector
-                  allTeams={allTeams}
-                  selectedTeams={selectedTeams}
-                  matchHistory={matchHistory}
-                  favoriteTeam={favoriteTeam}
-                  onMatchHistoryChange={setMatchHistory}
-                  onTeamSelect={handleTeamSelect}
-                  onTeamRemove={handleTeamRemove}
-                  onFavoriteTeamSelect={setFavoriteTeam}
-                />
-                <button
-                  onClick={startTournament}
-                  disabled={selectedTeams.length !== 8}
-                  className="w-full mt-6 bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Start Tournament
-                </button>
-              </>
-            )}
-
-
-            {selectedModel && !allTeams && !teamsLoadError && (
-              <div className="flex items-center justify-center py-8">
-                <div
-                  className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent"/>
-              </div>
-            )}
-
-            {selectedModel && teamsLoadError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5"/>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Error Loading teams</h3>
-                    <p className="mt-1 text-sm text-red-700">{teamsLoadError}</p>
-                    <button
-                      onClick={handleRetryLoadTeams}
-                      className="mt-2 inline-flex items-center text-sm font-medium text-red-600 hover:text-red-500"
-                    >
-                      Try Again
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {selectedModel &&
+              <TeamSelector
+                selectedModel={selectedModel}
+                selectedTeams={selectedTeams}
+                matchHistory={matchHistory}
+                favoriteTeam={favoriteTeam}
+                onMatchHistoryChange={setMatchHistory}
+                onTeamSelect={handleTeamSelect}
+                onTeamRemove={handleTeamRemove}
+                onFavoriteTeamSelect={setFavoriteTeam}
+                startTournament={startTournament}
+              />}
           </div>
         </div>
       ) : (
@@ -274,7 +223,7 @@ export default function Tournament() {
           <Bracket
             matches={matches}
             onMatchClick={handleMatchClick}
-            onProceed={proceedToNextRound}
+            proceedToNextRound={() => proceedToNextRound(selectedModel!, matchHistory)}
             currentRound={currentRound}
           />
 
@@ -284,8 +233,8 @@ export default function Tournament() {
       )}
 
       {winner && <VictoryAnimation winner={winner} onClose={handleClose}/>}
-      {loosingMatch &&
-        <TeamFailedAnimation favoriteTeam={allTeams.find(t => t.id === favoriteTeam)!} match={loosingMatch!}
+      {loosingMatch && favoriteTeam &&
+        <TeamFailedAnimation favoriteTeam={selectedTeams.find(t => t.id === favoriteTeam)!} match={loosingMatch!}
                              lastSustainedRound={lastNonResultRound.current}
                              onClose={handleClose}/>}
 
@@ -301,8 +250,8 @@ export default function Tournament() {
         <MatchResult
           homeTeam={selectedMatch.homeTeam}
           awayTeam={selectedMatch.awayTeam}
-          homeGoals={selectedMatch.homeTeam.stats!.goalsScored}
-          awayGoals={selectedMatch.awayTeam.stats!.goalsScored}
+          homeGoals={selectedMatch.homeTeam.stats!.goalsScored!}
+          awayGoals={selectedMatch.awayTeam.stats!.goalsScored!}
           onClose={() => setSelectedMatch(null)}
         />
       )}

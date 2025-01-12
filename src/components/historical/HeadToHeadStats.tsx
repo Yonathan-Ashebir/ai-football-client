@@ -1,4 +1,3 @@
-import React from 'react';
 import { Trophy, Target, ArrowRight } from 'lucide-react';
 import type { HeadToHeadStats } from '../../types';
 

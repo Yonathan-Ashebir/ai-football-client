@@ -1,4 +1,3 @@
-import React from 'react';
 import { Trophy } from 'lucide-react';
 import MatchCard from './MatchCard';
 import type { Match } from '../../types/matches';

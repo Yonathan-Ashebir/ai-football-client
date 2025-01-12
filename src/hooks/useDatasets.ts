@@ -23,7 +23,7 @@ export function useDatasets() {
 
   const uploadDataset = async (file: File, name: string, type: DatasetType) => {
     try {
-      const newDataset = (await datasetsApi.upload(file, name, type))['new_dataset']
+      const newDataset = await datasetsApi.upload(file, name, type)
       quickUpdate([...(datasets || []),newDataset])
     } catch (err) {
       throw new Error('Failed to upload dataset');

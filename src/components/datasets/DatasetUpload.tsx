@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {FormEvent, useCallback, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {AlertCircle, Loader2, Trophy, Upload, UserCircle, X} from 'lucide-react';
 import {DatasetType} from "../../utils/api.ts";
@@ -8,11 +8,11 @@ interface Props {
 }
 
 export default function DatasetUpload({ onUpload }: Props) {
-  const [name, setName] = React.useState('');
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [error, setError] = React.useState<string>('');
-  const [type, setType] = React.useState<DatasetType>('Match Results');
-  const [isUploading, setIsUploading] = React.useState(false);
+  const [name, setName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [error, setError] = useState<string>('');
+  const [type, setType] = useState<DatasetType>('Match Results');
+  const [isUploading, setIsUploading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -33,7 +33,7 @@ export default function DatasetUpload({ onUpload }: Props) {
     disabled: isUploading
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedFile || !name.trim()) {
       setError('Please provide both a file and a name');

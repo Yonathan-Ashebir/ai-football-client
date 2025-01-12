@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Trophy } from 'lucide-react';
 import type { Match } from '../../types/matches';
 import { formatMatchDate } from '../../utils/dateUtils';

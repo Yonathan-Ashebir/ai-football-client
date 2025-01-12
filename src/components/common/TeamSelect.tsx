@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { TournamentTeam } from '../../types/tournament';
 
@@ -65,7 +65,7 @@ export default function TeamSelect({ value, onChange, placeholder, teams, classN
             >
               <img src={team.logoUrl} alt={team.name} className="w-6 h-6" />
               <span>{team.name}</span>
-              {team.stats && (
+              {team.stats?.winProbability && (
                 <div className="ml-auto text-xs text-gray-500">
                   Win Rate: {(team.stats.winProbability * 100).toFixed(0)}%
                 </div>

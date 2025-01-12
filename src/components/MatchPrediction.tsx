@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import {FormEvent, useEffect, useState} from 'react';
 import {AlertCircle, Brain, HelpCircle, Loader2, Trophy, X} from 'lucide-react';
 import ModelSelector from './prediction/ModelSelector';
 import MatchHistorySelector from './prediction/MatchHistorySelector';
 import AdvancedMetrics from './prediction/AdvancedMetrics';
 import TeamSelect from './common/TeamSelect';
 import {usePrediction} from '../hooks/usePrediction';
-import {Model, ModelTypes} from '../types/model';
+import {Model, ModelType, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
 import {modelsApi} from "../utils/api.ts";
 import {findIntersection} from "../utils";
@@ -30,9 +30,8 @@ const REQUIRED_MODEL_TYPES = [
   }
 ] as const;
 
-type ModelSelections = {
-  [K in typeof REQUIRED_MODEL_TYPES[number]['id']]?: string;
-};
+
+type ModelSelections = { [K in ModelType]?: Model['id']}
 
 export default function MatchPrediction() {
   const [selectedModels, setSelectedModels] = useState<ModelSelections>({});
@@ -40,7 +39,6 @@ export default function MatchPrediction() {
   const [awayTeam, setAwayTeam] = useState<string>('');
   const [matchHistory, setMatchHistory] = useState<number>(2);
   const [showResults, setShowResults] = useState(false);
-
 
   const {loading, error, result, metrics, getPrediction} = usePrediction();
 
@@ -59,8 +57,8 @@ export default function MatchPrediction() {
     quickUpdate: setTeams
   } = useResource<TournamentTeam[]>(async () => {
     let requests = []
-    for (let key in selectedModels) {
-      const modelId = selectedModels[key];
+    for (const key  in selectedModels) {
+      const modelId = selectedModels[key as ModelType]!;
       requests.push(modelsApi.getModelTeams(modelId!))
     }
     const groupsOfTeams = await Promise.all(requests)
@@ -83,7 +81,7 @@ export default function MatchPrediction() {
     type => selectedModels[type.id] !== undefined
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     await getPrediction({
@@ -268,13 +266,13 @@ export default function MatchPrediction() {
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <div className="text-sm font-medium text-gray-500">Draw</div>
                 <div className="text-lg font-bold text-gray-600">
-                  {(result.drawProbability * 100).toFixed(1)}%
+                  {(result!.drawProbability * 100).toFixed(1)}%
                 </div>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <div className="text-sm font-medium text-gray-500">Away Win</div>
                 <div className="text-lg font-bold text-blue-600">
-                  {(result.awayTeamProbability * 100).toFixed(1)}%
+                  {(result!.awayTeamProbability * 100).toFixed(1)}%
                 </div>
               </div>
             </div>

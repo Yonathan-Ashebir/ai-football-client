@@ -1,9 +1,9 @@
-export class DatasetTypes {
-  static MATCHES = "match";
-  static PLAYER_STATS = "player_statistics";
-}
+export type DatasetType = "match" | "player_statistics";
 
-export type DatasetType =  "match" | "player_statistics";
+export const DatasetTypes: Record<string, DatasetType> = {
+  MATCHES: "match",
+  PLAYER_STATS: "player_statistics"
+} as const
 
 export interface Dataset {
   id: string;

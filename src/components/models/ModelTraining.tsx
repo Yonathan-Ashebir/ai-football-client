@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {ArrowLeft, Brain} from 'lucide-react';
 import ModelTypeSelector from './ModelTypeSelector';
 import DatasetSelector from './DatasetSelector';
 import ColumnSelector from './ColumnSelector';
 import {Dataset, DatasetTypes} from '../../types/dataset';
-import type {ModelType} from '../../types/model';
 import {useResource} from "../../hooks/useResource.ts";
 import {datasetsApi} from "../../utils/api.ts";
 import ErrorDisplay from "../common/ErrorDisplay.tsx";
@@ -14,7 +13,7 @@ interface Props {
 }
 
 interface TrainingConfig {
-  modelType: ModelType;
+  modelType: 'match-prediction' | 'player-position' ;
   datasetId: string;
   columns: string[];
   name: string;
@@ -31,7 +30,7 @@ const getDatasetTypesForModelType = (modelType: string): string[] => {
 
 export default function ModelTraining({onTrain}: Props) {
   const [step, setStep] = useState<'dataset' | 'name' | 'columns'>('dataset');
-  const [modelType, setModelType] = useState<ModelType>('match-prediction');
+  const [modelType, setModelType] = useState<'match-prediction' | 'player-position' >('match-prediction');
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [modelName, setModelName] = useState('');
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
@@ -55,7 +54,7 @@ export default function ModelTraining({onTrain}: Props) {
     }
   };
 
-  const handleModelSelection = (m: ModelType) => {
+  const handleModelSelection = (m: 'match-prediction' | 'player-position' ) => {
     if (m !== modelType) {
       setModelType(m);
       setStep('dataset')

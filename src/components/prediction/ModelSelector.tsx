@@ -1,6 +1,6 @@
-import React from 'react';
 import { Brain, Search, Loader2 } from 'lucide-react';
 import {Model, ModelStatus} from '../../types/model';
+import {useState} from "react";
 
 interface Props {
   models: Model[];
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ModelSelector({ models, selectedModel, onSelect}: Props) {
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   
   const filteredModels = models.filter(model => 
     model.name.toLowerCase().includes(searchQuery.toLowerCase()) &&

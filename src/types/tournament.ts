@@ -3,8 +3,8 @@ export interface TournamentTeam {
   name: string;
   logoUrl?: string;
   stats?: {
-    winProbability: number;
-    goalsScored: number;
+    winProbability?: number;
+    goalsScored?: number;
   };
 }
 

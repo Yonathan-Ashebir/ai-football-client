@@ -1,4 +1,3 @@
-import React from 'react';
 import { History, Star } from 'lucide-react';
 import type { TournamentTeam } from '../../types/tournament';
 

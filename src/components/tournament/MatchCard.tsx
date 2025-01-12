@@ -26,7 +26,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
       onClick={isCurrentRound ? undefined : onClick}
       className={`bg-gray-800 rounded-xl p-4 ${
         isFinal ? 'border-2 border-yellow-500' : ''
-      } ${isCurrentRound ? 'ring-2 ring-primary-500' : ''} ${
+      } ${isCurrentRound && !isFinal ? 'ring-2 ring-primary-500' : ''} ${
         !isCurrentRound ? 'cursor-pointer hover:scale-105 transition-transform' : ''
       }`}
     >
@@ -51,7 +51,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
             />
           </div>
           <span className="flex-1 font-medium">{match.homeTeam.name}</span>
-          {!isCurrentRound && <span className="text-xl font-bold">{match.homeTeam.stats?.goalsScored}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{match.homeTeam.stats?.goalsScored?.toFixed(1)}</span>}
         </div>
 
         <div className={getTeamClasses(false)}>
@@ -63,7 +63,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
             />
           </div>
           <span className="flex-1 font-medium">{match.awayTeam.name}</span>
-          {!isCurrentRound && <span className="text-xl font-bold">{match.awayTeam.stats?.goalsScored}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{match.awayTeam.stats?.goalsScored?.toFixed(1)}</span>}
         </div>
       </div>
     </div>

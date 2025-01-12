@@ -16,7 +16,7 @@ Welcome to the **AI-Powered Match Outcome and Player Position Prediction** clien
 
 ## 🛠️ Tech Stack
 
-- **Frontend Framework**: [React.js](https://reactjs.org/)
+- **Frontend Framework**: [js](https://reactjs.org/)
 - **State Management**: [Redux](https://redux.js.org/) (or mention your choice here)
 - **UI Components**: [Material-UI](https://mui.com/) / [Tailwind CSS](https://tailwindcss.com/)
 - **API Integration**: Axios for server communication

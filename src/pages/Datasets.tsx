@@ -21,7 +21,7 @@ export default function Datasets() {
     await refreshDatasets();
     setIsRefreshing(false);
   };
- console.log(error)
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4">
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">

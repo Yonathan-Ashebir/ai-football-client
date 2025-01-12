@@ -1,10 +1,8 @@
-import React from 'react';
-import { Brain, Trophy, UserCircle } from 'lucide-react';
-import type { ModelType } from '../../types/model';
+import {Trophy, UserCircle} from 'lucide-react';
 
 interface Props {
-  selectedType: ModelType | null;
-  onSelect: (type: ModelType) => void;
+  selectedType: 'match-prediction' | 'player-position' | null;
+  onSelect: (type: 'match-prediction' | 'player-position' ) => void;
 }
 
 export default function ModelTypeSelector({ selectedType, onSelect }: Props) {

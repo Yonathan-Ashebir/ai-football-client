@@ -1,4 +1,3 @@
-import React from 'react';
 import { History, HelpCircle } from 'lucide-react';
 
 interface Props {

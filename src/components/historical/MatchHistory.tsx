@@ -1,4 +1,3 @@
-import React from 'react';
 import { Calendar } from 'lucide-react';
 import type { HistoricalMatch } from '../../types';
 

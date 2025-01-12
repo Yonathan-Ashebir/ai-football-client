@@ -1,4 +1,8 @@
 import axios from 'axios';
+import {Model, ModelType} from "../types/model.ts";
+import {Feature, PairwiseStatistic, PlayerPositionPrediction} from "../types";
+import {TournamentTeam} from "../types/tournament.ts";
+import {Dataset} from "../types/dataset.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -10,11 +14,15 @@ const api = axios.create({
 });
 
 export type DatasetType = 'Match Results' | 'Player Statistics'
-export const datasetTypeMap  = {'Player Statistics': 'player_statistics', 'Match Results': 'match'}
+export const datasetTypeMap = {'Player Statistics': 'player_statistics', 'Match Results': 'match'}
+
+export interface Message {
+  message: string;
+}
 
 // Datasets
 export const datasetsApi = {
-  list: (datasetTypes:string[] = []) => api.get('/datasets/list', {
+  list: (datasetTypes: string[] = []): Promise<Dataset[]> => api.get('/datasets/list', {
     params: {'dataset_types': datasetTypes.join(',')}
   }).then(res => res.data),
 
@@ -31,7 +39,7 @@ export const datasetsApi = {
               columns: string[];
               sortColumns: string[];
               sortOrders: string[];
-            }) =>
+            }):Promise<{rows: string[][], total_count: number}> =>
     api.get(`/datasets/preview/${id}`, {
       params: {
         start_row,
@@ -42,7 +50,7 @@ export const datasetsApi = {
       }
     }).then(resp => resp.data),
 
-  upload: async (file: File, newName: string, type: DatasetType) => {
+  upload: async (file: File, newName: string, type: DatasetType): Promise<Dataset> => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('new_name', newName);
@@ -50,10 +58,10 @@ export const datasetsApi = {
     let resp = await api.post('/datasets/upload_one', formData, {
       headers: {'Content-Type': 'multipart/form-data'},
     });
-    return await resp.data;
+    return await resp.data['new_dataset'];
   },
 
-  delete: (id: string) => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
+  delete: (id: string): Promise<Message> => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
 
   download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
 
@@ -66,14 +74,16 @@ export const modelsApi = {
     datasetId: string;
     modelType: 'match-prediction' | 'player-position';
     parameters?: Record<string, any>;
-  }) => api.post('/models/create_one', data),
+  }): Promise<Model> => api.post('/models/create_one', data),
 
   /**
    * Fetch the list of models for the current user.
    * @returns {Promise} Resolves with the list of models.
    */
-  async list(): Promise<any> {
-    let response = await api.get('/models/list');
+  async list(modelTypes?: ModelType[]): Promise<Model[]> {
+    let response = await api.get('/models/list', {
+      params: {'model_types': modelTypes?.join(',')}
+    });
     return (await response.data)['models'];
   },
 
@@ -83,16 +93,25 @@ export const modelsApi = {
    * @returns {Promise} Resolves with a success message.
    */
 
-  async delete(modelId: string) {
+  async delete(modelId: string): Promise<Message> {
     let response = await api.delete(`/models/delete/${modelId}`);
     return await response.data;
   },
 
-  getModelTeams: async (modelId: string) => {
+  getModelTeams: async (modelId: string): Promise<TournamentTeam[]> => {
     const response = await api.get(`/models/get_model_teams/${modelId}`);
-    return response.data.teams; // Assuming API response has a "teams" field
+    return response.data.teams;
   },
 };
+
+export const knockoutsApi = {
+  getPairwiseStatistics: (payload: {
+    teams: string[],
+    no_draw: boolean,
+    previous_matches_count: number,
+    models: { [K in ModelType]?: Model['id'] },
+  }): Promise<PairwiseStatistic[]> => api.post("/knockouts/get_pairwise_statistics", payload).then(resp => resp.data),
+}
 
 // Error handler
 api.interceptors.response.use(
@@ -105,5 +124,22 @@ api.interceptors.response.use(
   }
 );
 
+export const playerStatisticsApi = {
+  getPlayerBestPosition: (payload: {
+    measurements: Record<string, number>,
+    model_id: string
+  }): Promise<PlayerPositionPrediction> => api.post("/player/get_player_best_position", payload).then(resp => resp.data),
+  getAdjustableFeatures: (modelID: string): Promise<Feature[]> => api.get(`/player/get_adjustable_features_for_model`, {params: {model_id: modelID}}).then(resp => {
+    return resp.data['adjustable_features']
+  }),
+  extractPlayerMeasurements: async (file: File): Promise<Record<Feature['id'], number>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    let resp = await api.post('/player/extract_measurements', formData, {
+      headers: {'Content-Type': 'multipart/form-data'},
+    });
+    return resp.data['measurements'];
+  },
+}
 
 export default api;

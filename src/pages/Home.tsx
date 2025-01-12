@@ -1,7 +1,7 @@
-import React from 'react';
 import {Link} from 'react-router-dom';
 import {Brain, ChevronLeft, ChevronRight, TrendingUp, Trophy, UserCircle, Zap} from 'lucide-react';
 import {useMatches} from '../hooks/useMatches';
+import {useEffect, useState} from "react";
 
 const features = [
   {
@@ -35,7 +35,7 @@ const carouselImages = [
 export default function Home() {
   const { matches, loading, predictMatch } = useMatches();
   const upcomingMatches = matches.slice(0, 3);
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
@@ -45,7 +45,7 @@ export default function Home() {
     setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
   }, []);

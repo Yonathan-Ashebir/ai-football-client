@@ -1,4 +1,3 @@
-import React from 'react';
 import { Trophy, Medal, Award } from 'lucide-react';
 import type { UserPredictionScore } from '../../types/tournament';
 

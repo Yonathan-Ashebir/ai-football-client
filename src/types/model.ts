@@ -19,14 +19,22 @@ export interface Model {
   accuracy_description?: string;
   model_description?: string;
 }
-export type ModelType = "match_winner" |  "match_winner_with_scaler" | "player_statistics_with_scaler" | "both_teams_to_score_with_scaler" | "number_of_goals_with_scaler";
-export class ModelTypes {
-  static MATCH_WINNER = "match_winner";
-  static MATCH_WINNER_WITH_SCALER = "match_winner_with_scaler";
-  static PLAYER_STATISTICS_WITH_SCALER = "player_statistics_with_scaler";
-  static BOTH_TEAMS_TO_SCORE_WITH_SCALER = "both_teams_to_score_with_scaler";
-  static NUMBER_OF_GOALS_WITH_SCALER = "number_of_goals_with_scaler";
-}
+
+export type ModelType =
+  "match_winner"
+  | "match_winner_with_scaler"
+  | "player_statistics_with_scaler"
+  | "both_teams_to_score_with_scaler"
+  | "number_of_goals_with_scaler";
+
+export const ModelTypes : Record<string, ModelType>= {
+  MATCH_WINNER: "match_winner",
+  MATCH_WINNER_WITH_SCALER: "match_winner_with_scaler",
+  PLAYER_STATISTICS_WITH_SCALER: "player_statistics_with_scaler",
+  BOTH_TEAMS_TO_SCORE_WITH_SCALER: "both_teams_to_score_with_scaler",
+  NUMBER_OF_GOALS_WITH_SCALER: "number_of_goals_with_scaler",
+} as const
+
 
 export class ModelStatus {
   static readonly TRAINING = "training";

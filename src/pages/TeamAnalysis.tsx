@@ -1,13 +1,13 @@
-import React from 'react';
 import HeatMap from '../components/visualizations/HeatMap';
 import FormationDisplay from '../components/visualizations/FormationDisplay';
 import PlayingStyle from '../components/visualizations/PlayingStyle';
 import PerformanceTimeline from '../components/visualizations/PerformanceTimeline';
 import StrengthChart from '../components/visualizations/StrengthChart';
 import TeamSelect from '../components/common/TeamSelect';
+import {useState} from "react";
 
 export default function TeamAnalysis() {
-  const [selectedTeam, setSelectedTeam] = React.useState('');
+  const [selectedTeam, setSelectedTeam] = useState('');
 
   // Mock data - In production, this would come from your API
   const mockData = {
@@ -46,6 +46,7 @@ export default function TeamAnalysis() {
         <h1 className="text-3xl font-bold text-gray-900">Team Analysis</h1>
         <div className="mt-4 max-w-xs">
           <TeamSelect
+            teams = {/*TODO*/ []}
             value={selectedTeam}
             onChange={setSelectedTeam}
             placeholder="Select a team"

@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { Search, X, Check, Filter, CheckSquare, Square, ArrowLeftRight} from 'lucide-react';
-import type { Dataset } from '../../types/dataset';
+import {useMemo, useState} from 'react';
+import {ArrowLeftRight, Check, CheckSquare, Filter, Search, X} from 'lucide-react';
+import type {Dataset} from '../../types/dataset';
 
 interface Props {
   dataset: Dataset;

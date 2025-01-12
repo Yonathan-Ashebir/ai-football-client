@@ -1,4 +1,3 @@
-import React from 'react';
 import { FileText, Calendar, Database } from 'lucide-react';
 
 interface Props {
