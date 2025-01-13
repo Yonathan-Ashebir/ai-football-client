@@ -79,7 +79,8 @@ export default function Tournament() {
       try {
         await createQuarterFinals(selectedTeams, selectedModel, matchHistory);
         setTournamentStarted(true);
-      }catch (error) {/*TODO*/}
+      } catch (error) {/*TODO*/
+      }
     }
   };
 
@@ -228,7 +229,7 @@ export default function Tournament() {
           />
 
           {/* Show Timeline only after tournament has started */}
-          <TournamentTimeline currentRound={currentRound} progress={progress}/>
+          <TournamentTimeline progress={progress}/>
         </div>
       )}
 

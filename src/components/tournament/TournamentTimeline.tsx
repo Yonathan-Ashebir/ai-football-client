@@ -1,37 +1,37 @@
 import {useEffect, useRef} from 'react';
 import {motion} from 'framer-motion';
-import {Trophy, Circle, Medal} from 'lucide-react';
+import {Circle, Medal, Trophy} from 'lucide-react';
 import {useSound} from "../../hooks/useSound.ts";
-/* TODO: fix */
+
+
 interface Props {
-  currentRound: 'quarterfinal' | 'semifinal' | 'final' | 'results' | 'champion';
   progress: number;
 }
 
-export default function TournamentTimeline({currentRound, progress}: Props) {
+export default function TournamentTimeline({progress}: Props) {
   const playSound = useSound();
-  const prevRoundRef = useRef(currentRound);
+  const prevProgress = useRef(progress);
 
   const rounds = [
-    {id: 'quarterfinal', name: 'Quarter Finals', icon: Circle, frequency: 440},
-    {id: 'semifinal', name: 'Semi Finals', icon: Circle, frequency: 523.25},
-    {id: 'final', name: 'Final', icon: Medal, frequency: 659.25},
-    {id: 'results', name: 'Champion', icon: Trophy, frequency: 783.99}
+    {id: 'quarterfinal', name: 'Quarter Finals', icon: Circle, frequency: 440, progress: 0},
+    {id: 'semifinal', name: 'Semi Finals', icon: Circle, frequency: 523.25, progress: 33.3},
+    {id: 'final', name: 'Final', icon: Medal, frequency: 659.25, progress: 66.6},
+    {id: 'results', name: 'Champion', icon: Trophy, frequency: 783.99, progress: 100}
   ];
 
   useEffect(() => {
-    if (prevRoundRef.current !== currentRound) {
-      const round = rounds.find(r => r.id === currentRound);
+    if (prevProgress.current !== progress) {
+      const round = rounds.find(r => r.progress === progress);
       if (round) {
         playSound(round.frequency, 0.3);
       }
-      prevRoundRef.current = currentRound;
+      prevProgress.current = progress;
     }
-  }, [currentRound, playSound]);
+  }, [progress, playSound]);
 
   const getStopColor = (roundId: string) => {
     const roundIndex = rounds.findIndex(r => r.id === roundId);
-    const currentIndex = rounds.findIndex(r => r.id === currentRound);
+    const currentIndex = rounds.findIndex(r => r.progress === progress);
 
     if (roundIndex <= currentIndex) {
       return 'bg-primary-500 text-gray-900';
@@ -59,7 +59,7 @@ export default function TournamentTimeline({currentRound, progress}: Props) {
         <div className="relative flex justify-between mx-5">
           {rounds.map((round, index) => {
             const Icon = round.icon;
-            const isActive = rounds.findIndex(r => r.id === currentRound) >= index;
+            const isActive = rounds.findIndex(r => r.progress === progress) >= index;
 
             return (
               <div
@@ -106,7 +106,7 @@ export default function TournamentTimeline({currentRound, progress}: Props) {
                 </motion.div>
                 <motion.span
                   className={`mt-2 text-sm font-medium whitespace-nowrap ${
-                    round.id === currentRound ? 'text-primary-500' : 'text-gray-400'
+                    round.progress === progress ? 'text-primary-500' : 'text-gray-400'
                   }`}
                   initial={{y: 10, opacity: 0}}
                   animate={{y: 0, opacity: 1}}

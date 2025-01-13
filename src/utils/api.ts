@@ -107,7 +107,7 @@ export const modelsApi = {
 export const knockoutsApi = {
   getPairwiseStatistics: (payload: {
     teams: string[],
-    no_draw: boolean,
+    no_draw?: boolean,
     previous_matches_count: number,
     models: { [K in ModelType]?: Model['id'] },
   }): Promise<PairwiseStatistic[]> => api.post("/knockouts/get_pairwise_statistics", payload).then(resp => resp.data),

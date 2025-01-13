@@ -1,6 +1,5 @@
-import type { AxiosError } from 'axios';
-import type { MatchesResponse } from '../types/matches';
-import { createApiClient } from '../utils/apiClient';
+import type {MatchesResponse} from '../types/matches';
+import {createApiClient} from '../utils/apiClient';
 
 const API_KEY = '0f3a523302814201bb92776918293cfd';
 const BASE_URL = 'https://api.football-data.org/v4';
@@ -73,14 +72,52 @@ const demoMatches: MatchesResponse = {
   }
 };
 
+const transformMatchesData = (matches: any) => {
+  return matches.map((match: any) => ({
+    id: String(match.id), // Ensure ID is a string
+    homeTeam: {
+      id: match.homeTeam.id,
+      name: match.homeTeam.name,
+      shortName: match.homeTeam.shortName,
+      crest: match.homeTeam.crest,
+    },
+    awayTeam: {
+      id: match.awayTeam.id,
+      name: match.awayTeam.name,
+      shortName: match.awayTeam.shortName,
+      crest: match.awayTeam.crest,
+    },
+    utcDate: new Date(match.utcDate).toISOString(), // Standardize date format
+    status: match.status,
+    matchday: match.matchday,
+    competition: {
+      id: match.competition.id,
+      name: match.competition.name,
+      emblem: match.competition.emblem,
+    },
+  }));
+};
+
+
 export const footballDataApi = {
-  getUpcomingMatches: async (): Promise<MatchesResponse> => {
+  getPremierLeagueMatches: async ({dateFrom, dateTo}: {
+    dateFrom?: string,
+    dateTo?: string
+  } = {}): Promise<MatchesResponse> => {
     try {
-      // Return demo data instead of making API call
-      return demoMatches;
+      const today = new Date();
+      const response = await api.get("/competitions/2021/matches", {
+        params: {
+          dateFrom: dateFrom === undefined ? today.toISOString().split('T')[0] : dateFrom,
+          dateTo
+        }
+      })
+      return transformMatchesData(response['data']['matches'])
     } catch (error) {
       console.error('Football API Error:', error);
       return demoMatches; // Fallback to demo data on error
     }
   }
 };
+
+
