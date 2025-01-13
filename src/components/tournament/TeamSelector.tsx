@@ -16,7 +16,6 @@ interface Props {
   onTeamSelect: (team: TournamentTeam) => void;
   onTeamRemove: (teamId: string) => void;
   onFavoriteTeamSelect: (teamId: string) => void;
-  startTournament: () => void;
 }
 
 export default function TeamSelector({
@@ -28,7 +27,6 @@ export default function TeamSelector({
                                        onTeamSelect,
                                        onTeamRemove,
                                        onFavoriteTeamSelect,
-                                       startTournament
                                      }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -145,13 +143,6 @@ export default function TeamSelector({
           </div>
         )}
       </div>
-      <button
-        onClick={startTournament}
-        disabled={selectedTeams.length !== 8 || !favoriteTeam}
-        className="w-full mt-6 bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Start Tournament
-      </button>
     </>
   );
 }

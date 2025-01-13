@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {AlertCircle, Brain, Search, Trophy} from 'lucide-react';
+import {AlertCircle, Brain, Loader2, Search, Trophy} from 'lucide-react';
 import Bracket from '../components/tournament/Bracket';
 import TeamSelector from '../components/tournament/TeamSelector';
 import TournamentSettings from '../components/tournament/TournamentSettings';
@@ -12,6 +12,7 @@ import type {MatchPrediction, TournamentTeam} from '../types/tournament';
 import {Model, ModelStatus, ModelTypes} from '../types/model';
 import TeamFailedAnimation from "../components/tournament/TeamFailedAnimation.tsx";
 import {modelsApi} from "../utils/api.ts";
+import ErrorDisplay from "../components/common/ErrorDisplay.tsx";
 
 export default function Tournament() {
   const [selectedTeams, setSelectedTeams] = useState<TournamentTeam[]>([]);
@@ -27,6 +28,8 @@ export default function Tournament() {
   const [isLoadingModels, setIsLoadingModels] = useState(true);
   const [modelsError, setModelsError] = useState<string | null>(null);
   const [models, setModels] = useState<Model[]>([]);
+  const [startTournamentError, setStartTournamentError] = useState<string | null>(null);
+  const [isStartingTournament, setIsStartingTournament] = useState<boolean>(false);
 
   const availableModels = models.filter(model =>
     model.type === ModelTypes.NUMBER_OF_GOALS_WITH_SCALER &&
@@ -77,9 +80,15 @@ export default function Tournament() {
   const startTournament = async () => {
     if (selectedTeams.length === 8 && selectedModel && favoriteTeam) {
       try {
+        setStartTournamentError(null);
+        setIsStartingTournament(true)
         await createQuarterFinals(selectedTeams, selectedModel, matchHistory);
+        setStartTournamentError(null);
         setTournamentStarted(true);
-      } catch (error) {/*TODO*/
+      } catch (error) {
+        setStartTournamentError(error instanceof Error ? error.message : "Could not start to tournament");
+      } finally {
+        setIsStartingTournament(false)
       }
     }
   };
@@ -210,8 +219,25 @@ export default function Tournament() {
                 onTeamSelect={handleTeamSelect}
                 onTeamRemove={handleTeamRemove}
                 onFavoriteTeamSelect={setFavoriteTeam}
-                startTournament={startTournament}
               />}
+
+
+            <button
+              onClick={startTournament}
+              disabled={selectedTeams.length !== 8 || !favoriteTeam}
+              className="w-full mt-6 bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Start Tournament
+            </button>
+
+            {isStartingTournament &&
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 text-primary-600 animate-spin"/>
+              </div>
+            }
+
+            {startTournamentError &&
+              <ErrorDisplay message={startTournamentError}/>}
           </div>
         </div>
       ) : (

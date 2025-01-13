@@ -39,7 +39,7 @@ export const datasetsApi = {
               columns: string[];
               sortColumns: string[];
               sortOrders: string[];
-            }):Promise<{rows: string[][], total_count: number}> =>
+            }): Promise<{ rows: string[][], total_count: number }> =>
     api.get(`/datasets/preview/${id}`, {
       params: {
         start_row,
@@ -113,17 +113,6 @@ export const knockoutsApi = {
   }): Promise<PairwiseStatistic[]> => api.post("/knockouts/get_pairwise_statistics", payload).then(resp => resp.data),
 }
 
-// Error handler
-api.interceptors.response.use(
-  response => response,
-  error => {
-    const message = error.response?.data?.message || 'An error occurred';
-    // You can implement a global error notification system here
-    console.error('API Error:', message);
-    return Promise.reject(error);
-  }
-);
-
 export const playerStatisticsApi = {
   getPlayerBestPosition: (payload: {
     measurements: Record<string, number>,
@@ -142,4 +131,13 @@ export const playerStatisticsApi = {
   },
 }
 
-export default api;
+// Error handler
+api.interceptors.response.use(
+  response => response,
+  error => {
+    const message = error.response?.data?.message || error.response?.data?.error || 'An error occurred';
+    // You can implement a global error notification system here
+    console.error('API Error:', message);
+    return Promise.reject(new Error(message));
+  }
+);

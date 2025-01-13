@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {footballDataApi} from '../services/footballDataApi';
 import type {Match} from '../types/matches';
 import {knockoutsApi, modelsApi} from "../utils/api.ts";

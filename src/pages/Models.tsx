@@ -66,6 +66,7 @@ export default function Models() {
             onDelete={handleDelete}
             isLoading={isRefreshing}
             searchQuery={searchQuery}
+            onRetry={handleRefresh}
           />
         </div>
       </div>

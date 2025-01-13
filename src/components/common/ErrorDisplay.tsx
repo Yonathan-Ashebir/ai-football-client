@@ -1,4 +1,4 @@
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import {AlertCircle} from 'lucide-react';
 
 interface Props {
   message: string;
@@ -18,7 +18,6 @@ export default function ErrorDisplay({ message, onRetry }: Props) {
               onClick={onRetry}
               className="mt-2 inline-flex items-center text-sm font-medium text-red-600 hover:text-red-500"
             >
-              <RefreshCw className="w-4 h-4 mr-1" />
               Try Again
             </button>
           )}

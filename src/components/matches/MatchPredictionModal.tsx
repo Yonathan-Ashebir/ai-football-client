@@ -1,6 +1,7 @@
-import { X, Trophy } from 'lucide-react';
-import type { Match } from '../../types/matches';
-import { formatMatchDate } from '../../utils/dateUtils';
+import {X} from 'lucide-react';
+import type {Match} from '../../types/matches';
+import {formatMatchDate} from '../../utils/dateUtils';
+import ErrorDisplay from "../common/ErrorDisplay.tsx";
 
 interface Props {
   match: Match;
@@ -11,10 +12,11 @@ interface Props {
     awayWin: number;
   };
   isLoading: boolean;
+  error: string | null;
 }
 
-export default function MatchPredictionModal({ match, onClose, prediction, isLoading }: Props) {
-  const { date, time } = formatMatchDate(match.utcDate);
+export default function MatchPredictionModal({match, onClose, prediction, isLoading, error}: Props) {
+  const {date, time} = formatMatchDate(match.utcDate);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -26,7 +28,7 @@ export default function MatchPredictionModal({ match, onClose, prediction, isLoa
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5"/>
             </button>
           </div>
 
@@ -34,12 +36,12 @@ export default function MatchPredictionModal({ match, onClose, prediction, isLoa
             <div className="text-sm text-gray-500 mb-2">{`${date} at ${time}`}</div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1">
-                <img src={match.homeTeam.crest} alt={match.homeTeam.name} className="w-12 h-12 mx-auto mb-2" />
+                <img src={match.homeTeam.crest} alt={match.homeTeam.name} className="w-12 h-12 mx-auto mb-2"/>
                 <div className="font-semibold">{match.homeTeam.shortName}</div>
               </div>
               <div className="text-sm text-gray-500">vs</div>
               <div className="flex-1">
-                <img src={match.awayTeam.crest} alt={match.awayTeam.name} className="w-12 h-12 mx-auto mb-2" />
+                <img src={match.awayTeam.crest} alt={match.awayTeam.name} className="w-12 h-12 mx-auto mb-2"/>
                 <div className="font-semibold">{match.awayTeam.shortName}</div>
               </div>
             </div>
@@ -47,7 +49,7 @@ export default function MatchPredictionModal({ match, onClose, prediction, isLoa
 
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent" />
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent"/>
             </div>
           ) : prediction ? (
             <div className="space-y-4">
@@ -73,6 +75,9 @@ export default function MatchPredictionModal({ match, onClose, prediction, isLoa
               </div>
             </div>
           ) : null}
+          {error &&
+            <ErrorDisplay message={error}/>
+          }
         </div>
       </div>
     </div>
