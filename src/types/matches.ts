@@ -23,18 +23,5 @@ export interface Match {
   venue?: string;
 }
 
-export interface MatchesResponse {
-  matches: Match[];
-  competition: {
-    id: number;
-    name: string;
-    code: string;
-    emblem: string;
-  };
-  resultSet: {
-    count: number;
-    first: string;
-    last: string;
-    played: number;
-  };
-}
+export const MAXIMUM_UPCOMING_MATCH_DAYS = 300
+export const DEFAULT_UPCOMING_MATCH_DAYS_END = 7

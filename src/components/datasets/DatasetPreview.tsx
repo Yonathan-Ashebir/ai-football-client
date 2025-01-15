@@ -68,7 +68,6 @@ export default function DatasetPreview({dataset, onClose}: Props) {
     else return rows.slice(pageStart - loadedStart, pageEnd - loadedStart);
   }, [pageStart, pageEnd, loadedStart, loadedEnd, rows]);
 
-  console.log("currentData",currentData,"isLoading" ,isLoading,"error",error)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col">

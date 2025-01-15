@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
-import {footballDataApi} from '../services/footballDataApi';
-import type {Match} from '../types/matches';
+import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from '../types/matches';
 import {knockoutsApi, modelsApi} from "../utils/api.ts";
 import stringSimilarity from "string-similarity"
 import {Model} from "../types/model.ts";
@@ -10,17 +9,19 @@ export function useMatches() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [predictingMatchId, setPredictingMatchId] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(() => new Date(startDate!.getFullYear(), startDate!.getMonth(), startDate!.getDate() + DEFAULT_UPCOMING_MATCH_DAYS_END));
 
   const fetchMatches = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await footballDataApi.getPremierLeagueMatches();
-      if (data.matches.length === 0) {
-        setError('No upcoming matches found. Please try again later.');
-      } else {
-        setMatches(data.matches);
-      }
+      const data = await knockoutsApi.getUpcomingMatches({
+        dateFrom: startDate ?? undefined,
+        dateTo: endDate ?? undefined
+      });
+
+      setMatches(data);
     } catch (err) {
       setError('Failed to fetch upcoming matches. Please try again later.');
     } finally {
@@ -100,5 +101,9 @@ export function useMatches() {
     predictMatch,
     predictingMatchId,
     refreshMatches: fetchMatches,
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate
   };
 }

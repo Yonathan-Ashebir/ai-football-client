@@ -3,6 +3,7 @@ import {Model, ModelType} from "../types/model.ts";
 import {Feature, PairwiseStatistic, PlayerPositionPrediction} from "../types";
 import {TournamentTeam} from "../types/tournament.ts";
 import {Dataset} from "../types/dataset.ts";
+import type {Match} from "../types/matches.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -103,6 +104,31 @@ export const modelsApi = {
     return response.data.teams;
   },
 };
+const transformMatchesData = (matches: any) => {
+  return matches.map((match: any) => ({
+    id: String(match.id), // Ensure ID is a string
+    homeTeam: {
+      id: match.homeTeam.id,
+      name: match.homeTeam.name,
+      shortName: match.homeTeam.shortName,
+      crest: match.homeTeam.crest,
+    },
+    awayTeam: {
+      id: match.awayTeam.id,
+      name: match.awayTeam.name,
+      shortName: match.awayTeam.shortName,
+      crest: match.awayTeam.crest,
+    },
+    utcDate: new Date(match.utcDate).toISOString(), // Standardize date format
+    status: match.status,
+    matchday: match.matchday,
+    competition: {
+      id: match.competition.id,
+      name: match.competition.name,
+      emblem: match.competition.emblem,
+    },
+  }));
+};
 
 export const knockoutsApi = {
   getPairwiseStatistics: (payload: {
@@ -111,8 +137,21 @@ export const knockoutsApi = {
     previous_matches_count: number,
     models: { [K in ModelType]?: Model['id'] },
   }): Promise<PairwiseStatistic[]> => api.post("/knockouts/get_pairwise_statistics", payload).then(resp => resp.data),
-}
 
+  getUpcomingMatches: async ({dateFrom, dateTo}: {
+    dateFrom?: Date,
+    dateTo?: Date
+  } = {}): Promise<Match[]> => {
+    const today = new Date();
+    const response = await api.get("/knockouts/get_upcoming_matches", {
+      params: {
+        date_from: (dateFrom ?? today).toISOString().split('T')[0],
+        date_to: (dateTo ?? new Date(today.getFullYear(), today.getMonth(), today.getDate() + 10)).toISOString().split('T')[0]
+      }
+    })
+    return transformMatchesData(response['data'].matches)
+  }
+}
 export const playerStatisticsApi = {
   getPlayerBestPosition: (payload: {
     measurements: Record<string, number>,

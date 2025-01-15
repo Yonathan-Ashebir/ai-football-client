@@ -4,7 +4,7 @@ import MatchesList from '../components/matches/MatchesList';
 import MatchesHeader from '../components/matches/MatchesHeader';
 import MatchPredictionModal from '../components/matches/MatchPredictionModal';
 import {useMatches} from '../hooks/useMatches';
-import type {Match} from '../types/matches';
+import {Match} from '../types/matches';
 
 export default function UpcomingMatches() {
   const {
@@ -12,13 +12,18 @@ export default function UpcomingMatches() {
     loading,
     error,
     predictMatch,
-    refreshMatches
+    refreshMatches,
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
   } = useMatches();
 
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [prediction, setPrediction] = useState<any>(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const [predictionError, setPredictionError] = useState<string | null>(null);
+
 
   const handlePredict = async (match: Match) => {
     setSelectedMatch(match);
@@ -51,6 +56,10 @@ export default function UpcomingMatches() {
           onRefresh={refreshMatches}
           isLoading={loading}
           totalMatches={matches.length}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
         />
 
         {error && (
