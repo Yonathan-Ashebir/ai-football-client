@@ -3,7 +3,8 @@ import {Model, ModelType} from "../types/model.ts";
 import {Feature, PairwiseStatistic, PlayerPositionPrediction} from "../types";
 import {TournamentTeam} from "../types/tournament.ts";
 import {Dataset} from "../types/dataset.ts";
-import type {Match} from "../types/matches.ts";
+import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from "../types/matches.ts";
+import {formatDateToYYYYMMDD, getFromDate} from "./dateUtils.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -130,6 +131,7 @@ const transformMatchesData = (matches: any) => {
   }));
 };
 
+
 export const knockoutsApi = {
   getPairwiseStatistics: (payload: {
     teams: string[],
@@ -143,10 +145,11 @@ export const knockoutsApi = {
     dateTo?: Date
   } = {}): Promise<Match[]> => {
     const today = new Date();
+    dateFrom = dateFrom ?? today
     const response = await api.get("/knockouts/get_upcoming_matches", {
       params: {
-        date_from: (dateFrom ?? today).toISOString().split('T')[0],
-        date_to: (dateTo ?? new Date(today.getFullYear(), today.getMonth(), today.getDate() + 10)).toISOString().split('T')[0]
+        date_from: formatDateToYYYYMMDD(dateFrom),
+        date_to: formatDateToYYYYMMDD(dateTo ?? getFromDate(dateFrom, DEFAULT_UPCOMING_MATCH_DAYS_END))
       }
     })
     return transformMatchesData(response['data'].matches)

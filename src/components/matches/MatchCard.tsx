@@ -5,10 +5,10 @@ import { formatMatchDate } from '../../utils/dateUtils';
 interface Props {
   match: Match;
   onPredict: (match: Match) => void;
-  isLoading?: boolean;
+  isPredicting?: boolean;
 }
 
-export default function MatchCard({ match, onPredict, isLoading }: Props) {
+export default function MatchCard({ match, onPredict, isPredicting }: Props) {
   const { date, time } = formatMatchDate(match.utcDate);
 
   return (
@@ -38,10 +38,10 @@ export default function MatchCard({ match, onPredict, isLoading }: Props) {
 
       <button
         onClick={() => onPredict(match)}
-        disabled={isLoading}
+        disabled={isPredicting}
         className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? 'Predicting...' : 'Predict Match'}
+        {isPredicting ? 'Predicting...' : 'Predict Match'}
       </button>
     </div>
   );

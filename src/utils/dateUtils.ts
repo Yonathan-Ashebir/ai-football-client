@@ -46,3 +46,19 @@ export function formatDistanceToNow(date: string | Date): string {
   const diffInYears = Math.floor(diffInMonths / 12);
   return `${diffInYears}y ago`;
 }
+
+export function formatDateToYYYYMMDD(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+
+export const getFromDate = (date: Date,offset: number = 0) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + offset)
+}
+
+export const getFromToday = (offset: number = 0) => {
+  return getFromDate(new Date(), offset);
+}

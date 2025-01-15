@@ -11,7 +11,7 @@ export default function ErrorDisplay({ message, onRetry }: Props) {
       <div className="flex items-start">
         <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
+          <h3 className="text-sm font-medium text-red-800">Error</h3>
           <p className="mt-1 text-sm text-red-700">{message}</p>
           {onRetry && (
             <button

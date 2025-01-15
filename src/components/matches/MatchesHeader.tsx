@@ -1,5 +1,5 @@
 import {RefreshCw} from 'lucide-react';
-import {DateRangeSelector} from "../DataRangeSelector.tsx";
+import {DateRangeSelector} from "./DataRangeSelector.tsx";
 
 interface Props {
   startDate: Date | null;

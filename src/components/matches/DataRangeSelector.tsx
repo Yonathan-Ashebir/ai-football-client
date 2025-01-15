@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
-import {MAXIMUM_UPCOMING_MATCH_DAYS} from "../types/matches.ts";
+import {MAXIMUM_UPCOMING_MATCH_DAYS} from "../../types/matches.ts";
+import {getFromToday} from "../../utils/dateUtils.ts";
 
 interface DateRangeSelectorProps {
   minDate?: Date;
@@ -13,8 +14,8 @@ interface DateRangeSelectorProps {
 }
 
 export function DateRangeSelector({
-                                    minDate = new Date(),
-                                    maxDate = new Date(new Date().setDate(new Date().getDate() + MAXIMUM_UPCOMING_MATCH_DAYS)),
+                                    minDate = getFromToday(),
+                                    maxDate = getFromToday(MAXIMUM_UPCOMING_MATCH_DAYS),
                                     startDate,
                                     endDate,
                                     onStartDateChange,
@@ -23,7 +24,7 @@ export function DateRangeSelector({
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
-  const [activeSelector, setActiveSelector] = useState<'start' | 'end'>('start');
+  const [activeSelector, setActiveSelector] = useState<'start' | 'end' | null>(null);
 
   console.log(startDate, endDate);
   useEffect(() => {
@@ -102,20 +103,28 @@ export function DateRangeSelector({
   };
 
   const nextMonth = () => {
-    new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0) < maxDate && setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
+    new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1) < maxDate && setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
   };
 
   const prevMonth = () => {
-    new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) > minDate && setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)));
+    new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) > minDate && setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
   };
 
   return (
     <div className="relative">
       <div
         className="inline-flex items-center gap-4 bg-white p-2 rounded-lg shadow-md cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isOpen) {
+            setIsOpen(false);
+            setActiveSelector(null)
+          }else {
+            setIsOpen(true);
+            setActiveSelector('start');
+          }
+        }}
       >
-       {/* <Calendar className="w-5 h-5 text-purple-600" />*/}
+        {/* <Calendar className="w-5 h-5 text-purple-600" />*/}
         <div className="flex items-center gap-2">
           <div className={`px-3 py-1 rounded-md ${activeSelector === 'start' ? 'bg-purple-100' : ''}`}>
             {formatDate(startDate)}
@@ -130,28 +139,28 @@ export function DateRangeSelector({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+            initial={{opacity: 0, y: 10}}
+            animate={{opacity: 1, y: 0}}
+            exit={{opacity: 0, y: 10}}
             className="absolute top-full mt-2 bg-white rounded-lg shadow-xl p-4 z-50"
           >
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={prevMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate? 'opacity-20': 'hover:bg-purple-100'}`}
+                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate ? 'opacity-20' : 'hover:bg-purple-100'}`}
                 disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate}
               >
-                <ChevronLeft className="w-5 h-5 text-purple-600" />
+                <ChevronLeft className="w-5 h-5 text-purple-600"/>
               </button>
               <h3 className="text-lg font-semibold text-gray-800">
-                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                {currentMonth.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}
               </h3>
               <button
                 onClick={nextMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0) >= maxDate? 'opacity-20': 'hover:bg-purple-100'}`}
+                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1) >= maxDate ? 'opacity-20' : 'hover:bg-purple-100'}`}
                 disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0) >= maxDate}
               >
-                <ChevronRight className="w-5 h-5 text-purple-600" />
+                <ChevronRight className="w-5 h-5 text-purple-600"/>
               </button>
             </div>
 
@@ -173,8 +182,8 @@ export function DateRangeSelector({
                 return (
                   <motion.button
                     key={index}
-                    whileHover={{ scale: !isDisabled ? 1.1 : 1 }}
-                    whileTap={{ scale: !isDisabled ? 0.95 : 1 }}
+                    whileHover={{scale: !isDisabled ? 1.1 : 1}}
+                    whileTap={{scale: !isDisabled ? 0.95 : 1}}
                     onClick={() => !isDisabled && handleDateClick(date)}
                     onMouseEnter={() => !isDisabled && setHoverDate(date)}
                     onMouseLeave={() => setHoverDate(null)}
@@ -192,7 +201,7 @@ export function DateRangeSelector({
                       <motion.div
                         layoutId="range-highlight"
                         className="absolute inset-0 bg-purple-100 rounded-lg -z-10"
-                        transition={{ duration: 0.2 }}
+                        transition={{duration: 0.2}}
                       />
                     )}
                   </motion.button>

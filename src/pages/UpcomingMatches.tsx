@@ -72,6 +72,8 @@ export default function UpcomingMatches() {
           matches={matches}
           onPredict={handlePredict}
           isLoading={loading}
+          isPredicting={isPredicting}
+          selectedMatch={selectedMatch}
         />
 
         {selectedMatch && (
