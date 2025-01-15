@@ -84,6 +84,8 @@ export default function MatchPrediction() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if(!homeTeam || !awayTeam) return
+
     await getPrediction({
       homeTeam,
       awayTeam,

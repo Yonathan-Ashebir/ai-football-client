@@ -51,12 +51,12 @@ export function useTournament() {
       if (currentRound === 'quarterfinal') {
         const semiFinals = await createNextRound(winners, currentRound, model, matchHistory);
         setCurrentRound('semifinal');
-        setProgress(33);
+        setProgress(33.3);
         setMatches(prev => [...prev, ...semiFinals]);
       } else if (currentRound === 'semifinal') {
         const final = await createNextRound(winners, currentRound, model, matchHistory);
         setCurrentRound('final');
-        setProgress(66);
+        setProgress(66.6);
         setMatches(prev => [...prev, ...final]);
       } else if (currentRound === 'final') {
         setWinner(winners[0]);

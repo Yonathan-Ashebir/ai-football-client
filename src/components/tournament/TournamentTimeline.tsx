@@ -17,7 +17,7 @@ export default function TournamentTimeline({progress}: Props) {
     {id: 'semifinal', name: 'Semi Finals', icon: Circle, frequency: 523.25, progress: 33.3},
     {id: 'final', name: 'Final', icon: Medal, frequency: 659.25, progress: 66.6},
     {id: 'results', name: 'Champion', icon: Trophy, frequency: 783.99, progress: 100}
-  ];
+  ] as const;
 
   useEffect(() => {
     if (prevProgress.current !== progress) {
@@ -29,12 +29,13 @@ export default function TournamentTimeline({progress}: Props) {
     }
   }, [progress, playSound]);
 
-  const getStopColor = (roundId: string) => {
+  const getStopColor = (roundId: typeof rounds[number]['id']) => {
     const roundIndex = rounds.findIndex(r => r.id === roundId);
     const currentIndex = rounds.findIndex(r => r.progress === progress);
 
     if (roundIndex <= currentIndex) {
-      return 'bg-primary-500 text-gray-900';
+      if (roundId === 'results') return 'bg-yellow-500 text-gray-900'
+        return 'bg-primary-500 text-gray-900';
     }
     return 'bg-gray-700 text-gray-400';
   };
