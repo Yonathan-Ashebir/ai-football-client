@@ -1,4 +1,5 @@
-import { Search, RefreshCw } from 'lucide-react';
+import {Search, RefreshCw} from 'lucide-react';
+import {SearchBar} from "../common/SearchBar.tsx";
 
 interface Props {
   searchQuery: string;
@@ -7,19 +8,10 @@ interface Props {
   isRefreshing: boolean;
 }
 
-export default function ModelsHeader({ searchQuery, onSearchChange, onRefresh, isRefreshing }: Props) {
+export default function ModelsHeader({searchQuery, onSearchChange, onRefresh, isRefreshing}: Props) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-        <input
-          type="text"
-          placeholder="Search models..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-        />
-      </div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={onSearchChange}/>
       <button
         onClick={onRefresh}
         disabled={isRefreshing}
@@ -29,7 +21,7 @@ export default function ModelsHeader({ searchQuery, onSearchChange, onRefresh, i
             : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
         }`}
       >
-        <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+        <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}/>
         Refresh
       </button>
     </div>

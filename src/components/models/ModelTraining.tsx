@@ -136,7 +136,7 @@ export default function ModelTraining({onTrain}: Props) {
                 value={modelName}
                 onChange={(e) => setModelName(e.target.value)}
                 placeholder="Enter model name"
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 placeholder-primary-300"
               />
               <button
                 onClick={handleNameSubmit}

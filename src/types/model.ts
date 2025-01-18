@@ -15,8 +15,10 @@ export interface Model {
   datasets: DatasetMini[];
   created_at: string;
   finished_training_at?: string;
-  accuracy?: number;
-  accuracy_description?: string;
+  information?: {
+    accuracy?: string;
+    accuracy_description?: string;
+  }
   model_description?: string;
 }
 

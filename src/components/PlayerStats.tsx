@@ -1,6 +1,6 @@
 import {FormEvent, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {AlertCircle, Brain, Check, Loader2, Search, UserCircle, X} from 'lucide-react';
+import {AlertCircle, Check, Loader2, UserCircle, X} from 'lucide-react';
 import {PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer} from 'recharts';
 import {Model, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
@@ -8,6 +8,7 @@ import {modelsApi, playerStatisticsApi} from "../utils/api.ts";
 import {Feature, PlayerPositionPrediction} from "../types";
 import {formatFileSize} from "../utils/formatters.ts";
 import ErrorDisplay from "./common/ErrorDisplay.tsx";
+import SingleModelSelector from "./common/SingleModelSelector.tsx";
 
 const MAX_PLAYER_MEASUREMENT_SIZE = 10 * 1024
 
@@ -21,7 +22,6 @@ export default function PlayerStats() {
     value: number,
     enabled: boolean
   }>>({});
-  const [searchQuery, setSearchQuery] = useState('');
   const [allNecessaryFeaturesSelected, setAllNecessaryFeaturesSelected] = useState(false);
 
 
@@ -72,75 +72,9 @@ export default function PlayerStats() {
       </div>
 
       {/* Model Selection */}
-      <div className="mb-8">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Select Model</h3>
-
-        {modelsError && !isLoadingModels ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5"/>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error Loading Models</h3>
-                <p className="mt-1 text-sm text-red-700">{modelsError.message}</p>
-                <button
-                  onClick={reloadModels}
-                  className="mt-2 inline-flex items-center text-sm font-medium text-red-600 hover:text-red-500"
-                >
-                  Try Again
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"/>
-              <input
-                type="text"
-                placeholder="Search models..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                disabled={isLoadingModels}
-              />
-            </div>
-            <div className="space-y-2">
-              {isLoadingModels ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 text-primary-600 animate-spin"/>
-                </div>
-              ) : availableModels.length > 0 ? (
-                availableModels.map((model) => (
-                  <button
-                    key={model.id}
-                    onClick={() => setSelectedModel(model)}
-                    className={`w-full flex items-center p-4 rounded-lg border transition-all ${
-                      selectedModel?.id === model.id
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-primary-500'
-                    }`}
-                  >
-                    <Brain className="w-5 h-5 text-primary-600 mr-3"/>
-                    <div className="text-left">
-                      <p className="font-medium text-gray-900">{model.name}</p>
-                      <p className="text-sm text-gray-500">
-                        Accuracy: {(model.accuracy! * 100).toFixed(1)}%
-                      </p>
-                    </div>
-                  </button>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No models found matching your search
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
+      <SingleModelSelector models={availableModels} selectedModel={selectedModel} onSelect={model => setSelectedModel(model)} onRetry={reloadModels} error={modelsError} isLoading={isLoadingModels}/>
       {selectedModel && !modelsError && (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
 
           <Features setSelectedFeatures={setAdjustedFeatures} selectedFeatures={adjustedFeatures}
                     selectedModel={selectedModel} setAllNecessaryFeaturesSelected={setAllNecessaryFeaturesSelected}/>
@@ -361,7 +295,7 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
                 value={selectedFeatures[feature.id]?.value}
                 onChange={(e) => updateFeature(feature, parseInt(e.target.value, 10))}
                 disabled={!selectedFeatures[feature.id]?.enabled}
-                className="w-full accent-primary-600 disabled:opacity-50"
+                className="w-full accent-primary-600 disabled:opacity-50 placeholder-primary-300 "
               />
             </div>
           ))}

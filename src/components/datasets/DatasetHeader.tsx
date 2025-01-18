@@ -1,4 +1,5 @@
-import { Search, RefreshCw } from 'lucide-react';
+import {RefreshCw} from 'lucide-react';
+import {SearchBar} from "../common/SearchBar.tsx";
 
 interface Props {
   searchQuery: string;
@@ -10,19 +11,9 @@ interface Props {
 export default function DatasetHeader({ searchQuery, onSearchChange, onRefresh, isRefreshing }: Props) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-        <input
-          type="text"
-          placeholder="Search datasets..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-        />
-      </div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={onSearchChange}/>
       <button
         onClick={onRefresh}
-        disabled={isRefreshing}
         className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
           isRefreshing
             ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'

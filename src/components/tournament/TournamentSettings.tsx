@@ -15,7 +15,7 @@ export default function TournamentSettings({
   const favoriteTeamObj = teams.find(team => team.id === favoriteTeam);
 
   return (
-    <div className="bg-gray-900 rounded-xl p-6 text-white">
+    <div className="bg-gray-900 rounded-lg p-6 text-white">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-4">

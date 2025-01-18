@@ -11,7 +11,7 @@ interface Props {
 
 export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Props) {
   const getTeamClasses = (isHome: boolean) => {
-    const baseClasses = 'flex items-center gap-2 p-3 rounded-lg transition-all';
+    const baseClasses = 'flex items-center gap-2 p-3 rounded-2xl transition-all';
 
     if (isCurrentRound) return `${baseClasses} text-gray-400`;
 
@@ -24,7 +24,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
   return (
     <div
       onClick={isCurrentRound ? undefined : onClick}
-      className={`bg-gray-800 rounded-xl p-4 ${
+      className={`bg-gray-800 rounded-2xl p-4 ${
         isFinal ? 'border-2 border-yellow-500' : ''
       } ${isCurrentRound && !isFinal ? 'ring-2 ring-primary-500' : ''} ${
         !isCurrentRound ? 'cursor-pointer hover:scale-105 transition-transform' : ''

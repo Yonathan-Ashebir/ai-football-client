@@ -1,6 +1,5 @@
 import {FormEvent, useEffect, useState} from 'react';
-import {AlertCircle, Brain, HelpCircle, Loader2, Trophy, X} from 'lucide-react';
-import ModelSelector from './prediction/ModelSelector';
+import {AlertCircle, Loader2, Trophy, X} from 'lucide-react';
 import MatchHistorySelector from './prediction/MatchHistorySelector';
 import AdvancedMetrics from './prediction/AdvancedMetrics';
 import TeamSelect from './common/TeamSelect';
@@ -9,10 +8,10 @@ import {Model, ModelType, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
 import {modelsApi} from "../utils/api.ts";
 import {findIntersection} from "../utils";
-import ErrorDisplay from "./common/ErrorDisplay.tsx";
 import {TournamentTeam} from "../types/tournament.ts";
+import ModelsSelector from "./common/ModelsSelector.tsx";
 
-const REQUIRED_MODEL_TYPES = [
+export const REQUIRED_MODEL_TYPES = [
   {
     id: ModelTypes.MATCH_WINNER_WITH_SCALER,
     label: 'Win Probability',
@@ -136,42 +135,8 @@ export default function MatchPrediction() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Model Selection Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {REQUIRED_MODEL_TYPES.map(type => (
-              <div key={type.id} className="relative group">
-                <div className="absolute -top-2 -right-2 z-10">
-                  <div className="relative">
-                    <HelpCircle className="w-4 h-4 text-gray-400 cursor-help"/>
-                    <div
-                      className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                      {type.description}
-                    </div>
-                  </div>
-                </div>
-                {!isLoadingModels && !modelsError &&
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="w-4 h-4 text-primary-600"/>
-                      <h3 className="text-sm font-medium text-gray-900">{type.label}</h3>
-                    </div>
-                    <ModelSelector
-                      models={models.filter(m => m.type === type.id)}
-                      selectedModel={models.find(m => m.id === selectedModels[type.id])}
-                      onSelect={(model) => handleModelSelect(type.id, model.id)}
-                    />
-                  </div>
-                }
-                {isLoadingModels &&
-                  <div className="flex items-center justify-center p-8">
-                    <Loader2 className="w-6 h-6 text-primary-600 animate-spin"/>
-                  </div>
-                }
-                {modelsError &&
-                  <ErrorDisplay message={modelsError.message} onRetry={reloadModels}/>
-                }
-              </div>
-            ))}
-          </div>
+          <ModelsSelector models={models} selectedModels={selectedModels} errors={{"match_winner_with_scaler": modelsError, "both_teams_to_score_with_scaler": modelsError , "number_of_goals_with_scaler": modelsError}} onSelect={handleModelSelect} modelTypes={REQUIRED_MODEL_TYPES}
+          onRetry={reloadModels} loadingStates={{"match_winner_with_scaler": isLoadingModels, "both_teams_to_score_with_scaler": isLoadingModels , "number_of_goals_with_scaler": isLoadingModels}} />
 
           {isModelSelectionComplete && (
             <>

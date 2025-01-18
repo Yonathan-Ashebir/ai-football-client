@@ -29,7 +29,7 @@ export default function MatchHistoryInput({ value, onChange }: Props) {
             max="6"
             value={value}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600 placeholder-primary-300 "
           />
           <span className="font-medium text-gray-700 min-w-[4rem] text-center">
             Last {value} {value === 1 ? 'Match' : 'Matches'}

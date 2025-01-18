@@ -41,7 +41,7 @@ export default function TournamentTimeline({progress}: Props) {
   };
 
   return (
-    <div className="bg-gray-800 rounded-xl shadow-xl p-8">
+    <div className="bg-gray-800 rounded-full shadow-xl px-12 py-4">
       <div className="relative">
         {/* Progress Line Container */}
         <div className="absolute top-1/2 transform -translate-y-1/2 left-[20px] right-[20px] z-0">
@@ -106,7 +106,7 @@ export default function TournamentTimeline({progress}: Props) {
                   </div>
                 </motion.div>
                 <motion.span
-                  className={`mt-2 text-sm font-medium whitespace-nowrap ${
+                  className={` text-sm font-medium whitespace-nowrap ${
                     round.progress === progress ? 'text-primary-500' : 'text-gray-400'
                   }`}
                   initial={{y: 10, opacity: 0}}

@@ -1,7 +1,7 @@
-import { Loader2, Trophy } from 'lucide-react';
+import {Trophy} from 'lucide-react';
 import MatchCard from './MatchCard';
 import MatchCardLoader from './MatchCardLoader.tsx';
-import type { Match } from '../../types/matches';
+import type {Match} from '../../types/matches';
 
 interface Props {
   matches: Match[];
@@ -12,15 +12,7 @@ interface Props {
 }
 
 export default function MatchesList({ matches, onPredict, isLoading, isPredicting, selectedMatch }: Props) {
-  if (matches.length === 0) {
-    return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <Trophy className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">No upcoming matches</h3>
-        <p className="mt-1 text-sm text-gray-500">Check back later for new fixtures</p>
-      </div>
-    );
-  }
+  console.log("Is loading", isLoading);
 
   if (isLoading) {
     return (
@@ -30,6 +22,16 @@ export default function MatchesList({ matches, onPredict, isLoading, isPredictin
             <MatchCardLoader />
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (matches.length === 0) {
+    return (
+      <div className="text-center py-12 bg-gray-50 rounded-lg">
+        <Trophy className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-sm font-semibold text-gray-900">No upcoming matches</h3>
+        <p className="mt-1 text-sm text-gray-500">Check back later for new fixtures</p>
       </div>
     );
   }

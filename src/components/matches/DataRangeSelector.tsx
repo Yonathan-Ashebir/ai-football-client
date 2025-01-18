@@ -124,13 +124,13 @@ export function DateRangeSelector({
           }
         }}
       >
-        {/* <Calendar className="w-5 h-5 text-purple-600" />*/}
+        {/* <Calendar className="w-5 h-5 text-primary-600" />*/}
         <div className="flex items-center gap-2">
-          <div className={`px-3 py-1 rounded-md ${activeSelector === 'start' ? 'bg-purple-100' : ''}`}>
+          <div className={`px-3 py-1 rounded-md ${activeSelector === 'start' ? 'bg-primary-100' : ''}`}>
             {formatDate(startDate)}
           </div>
           <span className="text-gray-400">→</span>
-          <div className={`px-3 py-1 rounded-md ${activeSelector === 'end' ? 'bg-purple-100' : ''}`}>
+          <div className={`px-3 py-1 rounded-md ${activeSelector === 'end' ? 'bg-primary-100' : ''}`}>
             {formatDate(endDate)}
           </div>
         </div>
@@ -147,20 +147,20 @@ export function DateRangeSelector({
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={prevMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate ? 'opacity-20' : 'hover:bg-purple-100'}`}
+                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate ? 'opacity-20' : 'hover:bg-primary-100'}`}
                 disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate}
               >
-                <ChevronLeft className="w-5 h-5 text-purple-600"/>
+                <ChevronLeft className="w-5 h-5 text-primary-600"/>
               </button>
               <h3 className="text-lg font-semibold text-gray-800">
                 {currentMonth.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}
               </h3>
               <button
                 onClick={nextMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1) >= maxDate ? 'opacity-20' : 'hover:bg-purple-100'}`}
+                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1) >= maxDate ? 'opacity-20' : 'hover:bg-primary-100'}`}
                 disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0) >= maxDate}
               >
-                <ChevronRight className="w-5 h-5 text-purple-600"/>
+                <ChevronRight className="w-5 h-5 text-primary-600"/>
               </button>
             </div>
 
@@ -190,17 +190,17 @@ export function DateRangeSelector({
                     disabled={isDisabled}
                     className={`
                       relative h-10 rounded-lg text-sm font-medium transition-colors px-2
-                      ${isDisabled ? 'text-red-300 cursor-not-allowed' : 'hover:text-purple-600'}
+                      ${isDisabled ? 'text-red-300 cursor-not-allowed' : 'hover:text-primary-600'}
                       ${!isCurrentMonth && !isSelected && !isInRange ? 'text-gray-400' : 'text-gray-700'}
-                      ${isSelected ? 'bg-purple-600 text-white' : ''}
-                      ${(isInRange || isInHoverRange) && !isSelected ? 'bg-purple-100' : ''}
+                      ${isSelected ? 'bg-primary-600 text-white' : ''}
+                      ${(isInRange || isInHoverRange) && !isSelected ? 'bg-primary-100' : ''}
                     `}
                   >
                     {date.getDate()}
                     {(isInRange || isInHoverRange) && !isSelected && (
                       <motion.div
                         layoutId="range-highlight"
-                        className="absolute inset-0 bg-purple-100 rounded-lg -z-10"
+                        className="absolute inset-0 bg-primary-100 rounded-lg -z-10"
                         transition={{duration: 0.2}}
                       />
                     )}

@@ -1,4 +1,4 @@
-import {AlertCircle, Search, Users} from 'lucide-react';
+import {AlertCircle, Users} from 'lucide-react';
 import MatchHistoryInput from './MatchHistoryInput';
 import FavoriteTeamSelector from './FavoriteTeamSelector';
 import type {TournamentTeam} from '../../types/tournament';
@@ -6,6 +6,8 @@ import {Model} from "../../types/model.ts";
 import {useResource} from "../../hooks/useResource.ts";
 import {modelsApi} from "../../utils/api.ts";
 import {useState} from "react";
+import TeamSearch from "./TeamSearch.tsx";
+import {getRandomElements} from "../../utils";
 
 interface Props {
   selectedModel: Model
@@ -51,6 +53,18 @@ export default function TeamSelector({
     team.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const onRandomSelect = () => {
+    const remainingTeams = 8 - selectedTeams.length
+    if (remainingTeams == 0) {
+       selectedTeams.forEach(team => onTeamRemove(team.id));
+      const randomTeams = getRandomElements(selectedTeams, 8);
+      randomTeams.forEach(onTeamSelect)
+    } else {
+      const randomTeams = getRandomElements(availableTeams, remainingTeams);
+      randomTeams.forEach(onTeamSelect)
+    }
+  }
+
   return (
     <>
       <div className="flex items-center gap-2 mb-4">
@@ -63,16 +77,7 @@ export default function TeamSelector({
           onChange={onMatchHistoryChange}
         />
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"/>
-          <input
-            type="text"
-            placeholder="Search teams..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+        <TeamSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} onRandomSelect={onRandomSelect}/>
         {allTeams.length > 0 &&
           <div className="grid grid-cols-2 gap-2">
             {selectedTeams.map(team => (

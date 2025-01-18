@@ -117,13 +117,13 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
             initial={{opacity: 0, scale: 0.8, y: 20}}
             animate={{opacity: 1, scale: 1, y: 0}}
             exit={{opacity: 0, scale: 0.8, y: 20}}
-            className="absolute bottom-16 right-0 w-96 h-[600px] bg-gradient-to-b from-white to-purple-50 rounded-2xl shadow-2xl overflow-hidden border border-purple-100"
+            className="absolute bottom-16 right-0 w-96 h-[600px] bg-gradient-to-b from-white to-primary-50 rounded-2xl shadow-2xl overflow-hidden border border-primary-100"
           >
             {/* Header */}
             <div
-              className="bg-gradient-to-r from-[#4c1d95] to-purple-700 text-white p-4 flex justify-between items-center">
+              className="bg-gradient-to-r from-primary to-primary-700 text-white p-4 flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-purple-300"/>
+                <Sparkles className="w-5 h-5 text-primary-300"/>
                 <h2 className="text-lg font-semibold">AI Assistant</h2>
               </div>
               <button
@@ -139,8 +139,8 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
               {isConnecting ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center space-y-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#4c1d95] mx-auto"/>
-                    <p className="text-purple-900">Establishing connection...</p>
+                    <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto"/>
+                    <p className="text-primary-900">Establishing connection...</p>
                   </div>
                 </div>
               ) : connectionError ? (
@@ -150,7 +150,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
                     <p className="text-red-500">{connectionError}</p>
                     <button
                       onClick={handleRetryConnection}
-                      className="px-4 py-2 bg-gradient-to-r from-[#4c1d95] to-purple-700 text-white rounded-full hover:opacity-90 transition-opacity flex items-center space-x-2 mx-auto"
+                      className="px-4 py-2 bg-gradient-to-r from-primary to-primary-700 text-white rounded-full hover:opacity-90 transition-opacity flex items-center space-x-2 mx-auto"
                     >
                       <RefreshCw className="w-4 h-4"/>
                       <span>Retry</span>
@@ -177,7 +177,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
                         className={`
                           max-w-[80%] p-4 shadow-lg
                           ${mainMessage.type === 'user'
-                          ? 'bg-gradient-to-br from-[#4c1d95] to-purple-700 text-white message-user'
+                          ? 'bg-gradient-to-br from-primary to-primary-700 text-white message-user'
                           : 'bg-white message-assistant'
                         }
                           relative
@@ -190,7 +190,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
                             <p className="whitespace-pre-wrap text-gray-800">
                               {group.map(msg => msg.content).join('')}
                               {isStreaming && (
-                                <span className="text-purple-600 animate-pulse">┃</span>
+                                <span className="text-primary-600 animate-pulse">┃</span>
                               )}
                             </p>
                             {group[group.length - 1].streamStatus === 'stream-error' && (
@@ -199,7 +199,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
                                 {index === groupedMessages.length - 1 &&
                                   <button
                                     onClick={() => onRetry(mainMessage.id)}
-                                    className="text-sm bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-1 rounded-full flex items-center space-x-1 transition-colors"
+                                    className="text-sm bg-primary-100 hover:bg-primary-200 text-primary-900 px-3 py-1 rounded-full flex items-center space-x-1 transition-colors"
                                   >
                                     <RefreshCw className="w-3 h-3"/>
                                     <span>Retry</span>
@@ -220,7 +220,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
             {/* Input Area */}
             <form
               onSubmit={handleSubmit}
-              className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-purple-100"
+              className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-primary-100"
             >
               <div className="flex space-x-2">
                 <textarea
@@ -238,15 +238,15 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
                           ? 'Please wait...'
                           : 'Type your message...'
                   }
-                  className="flex-1 resize-none rounded-2xl border border-purple-200 focus:border-[#4c1d95] focus:ring-1 focus:ring-[#4c1d95] p-3 max-h-32 disabled:bg-purple-50 disabled:text-purple-500 placeholder-purple-400"
+                  className="flex-1 resize-none rounded-2xl border border-primary-200 focus:border-primary focus:ring-1 focus:ring-primary p-3 max-h-32 disabled:bg-primary-50 disabled:text-primary-500 placeholder-primary-400"
                   rows={1}
                 />
                 <button
                   type={isInputDisabled ? "button" : "submit"}
                   disabled={enableActionButton}
                   className={`px-4 py-2 rounded-full flex items-center space-x-2 transition-all ${
-                    enableActionButton ? 'bg-purple-100 text-purple-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-[#4c1d95] to-purple-700 text-white hover:opacity-90 shadow-md hover:shadow-lg'
+                    enableActionButton ? 'bg-primary-100 text-primary-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-primary to-primary-700 text-white hover:opacity-90 shadow-md hover:shadow-lg'
                   }`}
                   onClick={() => isInputDisabled && !isConnecting && !connectionError && onInterrupt()}
                 >
@@ -275,7 +275,7 @@ export default function ChatBot({messages: propMessages, onMessage, onInterrupt,
         whileHover={{scale: 1.1}}
         whileTap={{scale: 0.9}}
         onClick={() => setIsOpen(true)}
-        className="bg-gradient-to-r from-[#4c1d95] to-purple-700 hover:opacity-90 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all"
+        className="bg-gradient-to-r from-primary to-primary-700 hover:opacity-90 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all"
       >
         <MessageCircle className="w-6 h-6"/>
       </motion.button>

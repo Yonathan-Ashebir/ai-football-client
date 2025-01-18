@@ -3,12 +3,14 @@ import {AnimatePresence, motion} from 'framer-motion';
 import type {MatchPrediction} from '../../types/tournament';
 import MatchCard from './MatchCard';
 import {ArrowRight, Loader2, RefreshCw} from "lucide-react";
+import TournamentTimeline from "./TournamentTimeline.tsx";
 
 interface Props {
   matches: MatchPrediction[];
   onMatchClick: (match: MatchPrediction) => void;
   proceedToNextRound: () => Promise<void>;
   currentRound: 'quarterfinal' | 'semifinal' | 'final' | 'results';
+  progress: number
 }
 
 const roundLabels = {
@@ -17,7 +19,7 @@ const roundLabels = {
   final: 'Results'
 };
 
-export default function Bracket({ matches, onMatchClick, proceedToNextRound, currentRound }: Props) {
+export default function Bracket({ matches, onMatchClick, proceedToNextRound, currentRound, progress }: Props) {
   const quarterFinals = matches.filter(m => m.round === 'quarterfinal');
   const semiFinals = matches.filter(m => m.round === 'semifinal');
   const final = matches.find(m => m.round === 'final');
@@ -41,7 +43,7 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
   };
 
   return (
-    <div className="relative min-h-[800px] bg-gray-900 rounded-xl p-8 overflow-hidden">
+    <div className="relative min-h-[800px] flex flex-col justify-between bg-gray-900 rounded-3xl p-8 pb-8 overflow-hidden">
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600">
           Tournament Bracket
@@ -152,7 +154,7 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
       </div>
 
       {/* Proceed Button */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+      <div className="proceed-button mt-4 bottom-8 left-0 right-0 flex justify-center">
         {currentRound !== 'results' && (
           <motion.button
             initial={{ opacity: 0, y: 20 }}
@@ -211,13 +213,16 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
         )}
       </div>
 
+      <div className='mt-4'/>
+      <TournamentTimeline progress={progress}/>
+
       <style>{`
         .home-winner::after,
         .away-winner::after {
           content: '';
           position: absolute;
           inset: 0;
-          border-radius: 0.75rem;
+          border-radius: 1rem;
           pointer-events: none;
           opacity: 0.15;
           transition: opacity 0.3s ease;
@@ -231,6 +236,9 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
         }
         .away-winner::after {
           background: linear-gradient(-45deg, rgb(59, 130, 246), transparent);
+        }
+        .proceed-button button{
+           border-radius: 1rem;
         }
       `}</style>
     </div>

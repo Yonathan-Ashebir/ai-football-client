@@ -1,6 +1,7 @@
 import {useMemo, useState} from 'react';
-import {ArrowLeftRight, Check, CheckSquare, Filter, Search, X} from 'lucide-react';
+import {ArrowLeftRight, Check, CheckSquare, Filter, X} from 'lucide-react';
 import type {Dataset} from '../../types/dataset';
+import {SearchBar} from "../common/SearchBar.tsx";
 
 interface Props {
   dataset: Dataset;
@@ -11,24 +12,24 @@ interface Props {
 }
 
 export default function ColumnSelectorDialog({
-  dataset,
-  selectedColumns,
-  onColumnToggle,
-  onClose,
-  isOpen
-}: Props) {
+                                               dataset,
+                                               selectedColumns,
+                                               onColumnToggle,
+                                               onClose,
+                                               isOpen
+                                             }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   const columnCategories = useMemo(() => {
     const categories = new Map<string, string[]>();
-    
+
     dataset.columns.forEach(column => {
       const category = column.split('_').slice(0, -1).join('_') || 'Other';
       const existing = categories.get(category) || [];
       categories.set(category, [...existing, column]);
     });
-    
+
     return categories;
   }, [dataset.columns]);
 
@@ -59,7 +60,7 @@ export default function ColumnSelectorDialog({
 
   if (!isOpen) return null;
 
-  const filteredSelectedCount = filteredColumns.filter(column => 
+  const filteredSelectedCount = filteredColumns.filter(column =>
     selectedColumns.includes(column)
   ).length;
 
@@ -69,23 +70,14 @@ export default function ColumnSelectorDialog({
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Select Training Columns</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5"/>
           </button>
         </div>
 
         <div className="p-4 border-b space-y-4">
           {/* Search and Filter Controls */}
           <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search columns..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
+            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
             <div className="relative">
               <select
                 value={categoryFilter || ''}
@@ -97,7 +89,7 @@ export default function ColumnSelectorDialog({
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
-              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"/>
             </div>
           </div>
 
@@ -108,21 +100,21 @@ export default function ColumnSelectorDialog({
                 onClick={handleSelectAll}
                 className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700"
               >
-                <CheckSquare className="w-4 h-4" />
+                <CheckSquare className="w-4 h-4"/>
                 Select All
               </button>
               <button
                 onClick={handleInvertSelection}
                 className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700"
               >
-                <ArrowLeftRight className="w-4 h-4" />
+                <ArrowLeftRight className="w-4 h-4"/>
                 Invert Selection
               </button>
               <button
                 onClick={handleClearSelection}
                 className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4"/>
                 Clear Selection
               </button>
             </div>
@@ -151,7 +143,7 @@ export default function ColumnSelectorDialog({
                     : 'border-gray-300'
                 }`}>
                   {selectedColumns.includes(column) && (
-                    <Check className="w-3 h-3 text-white" />
+                    <Check className="w-3 h-3 text-white"/>
                   )}
                 </div>
                 <span className="flex-1 truncate" title={column}>
