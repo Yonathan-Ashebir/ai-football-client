@@ -1,69 +1,111 @@
 import {DependencyList, useCallback, useMemo, useRef, useState} from "react";
+import {areDependenciesChanged} from "../utils";
 
 
-export function useManaged<T = any>(compute: (prev: T | null, error: any) => (Awaited<T> | Promise<T>), deps: DependencyList, options?: {
-  initialState?: Awaited<T>
-}) {
-  const updateIndexRef = useRef(0)
-  const callRef = useRef<Promise<T>>(); // info: to enforce React level redundancy protection
-  const [lateResult, setLateResult] = useState<{
+export function useManaged<T = any>(compute: (prev: T | null, error: any) => (Awaited<T> | Promise<T> | [Awaited<T>, Promise<T>]), deps: DependencyList) {
+  const callRef = useRef<Promise<T>>();
+
+  const [previousResult, setPreviousResult] = useState<{
     value: Awaited<T> | null,
-    error: any,
-    updateIndex: number
-  }>({value: options?.initialState ?? null, error: null, updateIndex: updateIndexRef.current});
+    error: any
+  }>({value: null, error: null});
+
+  const [previousComputedResult, setPreviousComputedResult] = useState<typeof previousResult>({
+    value: null,
+    error: null
+  })
+
+  const [previousAsyncResult, setPreviousAsyncResult] = useState<typeof previousResult>({
+    value: null,
+    error: null
+  })
+
+  const [asyncResult, setAsyncResult] = useState<typeof previousResult>({
+    value: null,
+    error: null
+  })
+
+  const lastDependencies = useRef<typeof deps | null>(null)  // TODO: weird bug: why the | null necessary
+
 
   const [isLoading, setIsLoading] = useState(false);
 
   const execute = async (task: Promise<T>) => {
     setIsLoading(true);
     let result;
+    callRef.current = task;
     do {
-      callRef.current = task;
+      task = callRef.current
       try {
-        result = {value: await task, error: null, updateIndex: updateIndexRef.current++}
+        result = {value: await task, error: null}
       } catch (e) {
-        result = {value: null, error: e, updateIndex: updateIndexRef.current++}
+        result = {value: null, error: e}
       }
     } while (callRef.current !== task)
     if (callRef.current === task) {
       setIsLoading(false);
-      setLateResult(result)
+      setAsyncResult(result)
     }
     return {value: result.value, error: result.error};
   }
 
-  const computed = useMemo(() => {
-    const result = compute(lateResult?.value, lateResult?.error)
+  const computed: typeof previousResult = useMemo(() => {
+    if (!areDependenciesChanged(lastDependencies.current, deps)) return previousComputedResult
+    lastDependencies.current = deps
+    const result = compute(previousResult?.value, previousResult?.error)
     if (result instanceof Promise) execute(result).then();
-    else {
-      const newState: { value: Awaited<T> | null; error: any; updateIndex: number; } = {
-        ...result,
+    else if (result instanceof Array && result[1] instanceof Promise) {
+      execute(result[1]).then();
+      return {
+        value: result[0],
+        error: null,
+      }
+    } else {
+      return {
         value: result,
         error: null,
-        updateIndex: updateIndexRef.current++
-      }
-      setLateResult(newState);
-      return newState
+      } as typeof previousResult
     }
-    return lateResult
+    return previousComputedResult
   }, deps)
 
-  const [value, error] = useMemo(() => {
-    if (lateResult?.updateIndex > computed?.updateIndex) return [lateResult.value, lateResult.value]
-    else return [computed.value, computed.error]
-  }, [lateResult, computed])
+  const {value, error} = useMemo(() => {
+    if (previousComputedResult !== computed) {
+      setPreviousResult(computed)
+      return computed
+    }
+    if (previousAsyncResult != asyncResult) {
+      setPreviousResult(asyncResult)
+      return asyncResult
+    }
+    return previousResult
+  }, [computed, asyncResult])
 
-  const update = useCallback(async (value: Awaited<T> | Promise<T> | ((prev: Awaited<T> | null, error: any) => (Awaited<T> | Promise<T>))) => {
-    let immediate
+  if (previousComputedResult !== computed) setPreviousComputedResult(computed)
+  if (previousAsyncResult !== asyncResult) setPreviousAsyncResult(asyncResult)
+
+
+  const update = useCallback(async (value: Awaited<T> | Promise<T> | typeof compute) => {
+    let result
     try {
-      immediate = value instanceof Function ? value(lateResult.value, lateResult.error) : value;
+      result = value instanceof Function ? value(previousResult.value, previousResult.error) : value;
     } catch (e) {
-      setLateResult({value: null, error: e, updateIndex: updateIndexRef.current++})
+      setAsyncResult({value: null, error: e})
       return {value: null, error: e}
     }
-    if (immediate instanceof Promise) return await execute(immediate)
-    setLateResult({value: immediate, error: null, updateIndex: updateIndexRef.current++})
-    return {value: immediate, error: null}
+    if (result instanceof Promise) return await execute(result)
+    if (result instanceof Array && result[1] instanceof Promise) {
+      execute(result[1]).then();
+      return {
+        value: result[0],
+        error: null,
+      }
+    } else {
+      return {
+        value: result,
+        error: null,
+      } as typeof previousResult
+    }
   }, [])
 
   return {

@@ -69,15 +69,24 @@ export const datasetsApi = {
   download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
 
   getDownloadLink: (id: string) => `${API_BASE_URL}datasets/download/${id}`,
+
+  getViableInputColumns: (datasetIDs: string[], targetModelType: ModelType) => api.get('/datasets/get_viable_input_columns', {
+    params: {
+      datasets: datasetIDs.join(','),
+      model_type: targetModelType,
+    }
+  }).then(resp => resp.data['columns'] as string[])
 };
 
 // Models
 export const modelsApi = {
-  create: (data: {
-    datasetId: string;
-    modelType: 'match-prediction' | 'player-position';
+  create: ({modelType, ...rest}: {
+    datasets: string[];
+    modelType: ModelType;
+    columns: string[];
+    name: string;
     parameters?: Record<string, any>;
-  }): Promise<Model> => api.post('/models/create_one', data),
+  }): Promise<Model> => api.post('/models/create_one', {model_type: modelType, ...rest}).then(resp => resp.data['model']),
 
   /**
    * Fetch the list of models for the current user.

@@ -8,15 +8,22 @@ export interface Feature {
   maximum?: number;
   prefix?: string;
   suffix?: string;
+  isInteger?: boolean;
 }
 
 export interface PlayerPositionPrediction {
   GK: number,
-  BF: number,
+  DF: number,
   FW: number,
   MF: number
 }
 
+export const positions: Record<keyof PlayerPositionPrediction, string> = {
+  FW: 'Striker',
+  MF: 'Midfielder',
+  DF: 'Defender',
+  GK: 'Goad keeper'
+};
 
 export interface PairwiseStatistic {
   team1: TournamentTeam['id']

@@ -1,8 +1,9 @@
 import {useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import {AlertCircle, Brain, ChevronRight, Loader2, Sparkles} from 'lucide-react';
+import {Brain, ChevronRight, Loader2, Sparkles} from 'lucide-react';
 import type {Model} from "../../types/model";
 import {SearchBar} from "./SearchBar.tsx";
+import ErrorDisplay from "./ErrorDisplay.tsx";
 
 interface Props {
   models: Model[];
@@ -58,28 +59,7 @@ export default function SingleModelSelector({
       {/* Search and Content */}
       <div className="p-6">
         {error ? (
-          <motion.div
-            initial={{opacity: 0, y: 10}}
-            animate={{opacity: 1, y: 0}}
-            className="bg-red-50 rounded-lg p-6 border border-red-100"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <AlertCircle className="w-6 h-6 text-red-600"/>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-red-900 font-medium mb-1">Failed to Load Models</h3>
-                <p className="text-red-700 text-sm mb-3">{error.message}</p>
-                <button
-                  onClick={onRetry}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-                >
-                  <Loader2 className="w-4 h-4"/>
-                  <span>Try Again</span>
-                </button>
-              </div>
-            </div>
-          </motion.div>
+            <ErrorDisplay message={error.message} onRetry={onRetry}/>
         ) : (
           <>
             <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} large={true} disabled={isLoading}/>

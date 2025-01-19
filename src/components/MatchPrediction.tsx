@@ -151,7 +151,7 @@ export default function MatchPrediction() {
                     <AlertCircle className="w-5 h-5 text-red-600 mt-0.5"/>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-red-800">Error Loading Teams</h3>
-                      <p className="mt-1 text-sm text-red-700">{teamsError}</p>
+                      <p className="mt-1 text-sm text-red-700">{teamsError.message}</p>
                       <button
                         onClick={handleRetryTeams}
                         className="mt-2 inline-flex items-center text-sm font-medium text-red-600 hover:text-red-500"

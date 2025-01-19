@@ -5,39 +5,14 @@ import {formatFileSize} from '../../utils/formatters';
 import {Model, ModelStatus} from "../../types/model.ts";
 import ModelStatusDisplay from "./ModelStatus.tsx";
 import {SearchBar} from "../common/SearchBar.tsx";
-import KeyValueDisplay from "../common/KeyValueDisplay.tsx";
+import {KeyValueChips} from "../common/KeyValueChips.tsx";
+import {filterKeys} from "../../utils";
 
 
 interface Props {
   model: Model;
   onDelete: (id: string) => void;
 }
-
-/* where Model is
-*  interface Model {
-  id: string;
-  name: string;
-  type: ModelType;
-  type_label: string;
-  status: string;
-  columns: string[];
-  datasets: DatasetMini[];
-  created_at: string;
-  finished_training_at?: string;
-  information?: {
-    accuracy?: string;
-    accuracy_description?: string;
-  }
-  model_description?: string;
-}
-* and where DatasetMini is:
-* interface DatasetMini {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-}
-* */
 
 export default function ModelCard({model, onDelete}: Props) {
   const [showColumns, setShowColumns] = useState(false);
@@ -53,6 +28,7 @@ export default function ModelCard({model, onDelete}: Props) {
   const isError = ModelStatus.ERROR.test(model.status);
   const errorMessage = isError ? model.status.substring(6).trim() : null; // TODO: fix
   const isTraining = model.status === ModelStatus.TRAINING;
+  const cleaned_information = model.information? filterKeys(model.information, "accuracy", "accuracy_description") : null;
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden relative group flex flex-col justify-between">
@@ -99,22 +75,22 @@ export default function ModelCard({model, onDelete}: Props) {
             <Clock className="w-4 h-4 mr-2"/>
             Created {formatDistanceToNow(model.created_at)}
           </div>
-          {/*{model.accuracy !== undefined && (*/}
-          {/*  <div className="flex items-center text-sm text-gray-500">*/}
-          {/*    <LineChart className="w-4 h-4 mr-2"/>*/}
-          {/*    Accuracy: {(model.accuracy * 100).toFixed(1)}%*/}
-          {/*    {model.accuracy_description && (*/}
-          {/*      <div className="relative group/tooltip ml-1">*/}
-          {/*        <Info className="w-4 h-4 text-gray-400 cursor-help"/>*/}
-          {/*        <div*/}
-          {/*          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-10">*/}
-          {/*          {model.accuracy_description}*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-          {/*    )}*/}
-          {/*  </div>*/}
-          {/*)}*/}
-          {model.information && <KeyValueDisplay data={model.information}/>}
+          {model.information?.accuracy !== undefined && (
+            <div className="flex items-center text-sm text-gray-500">
+              <LineChart className="w-4 h-4 mr-2"/>
+              Accuracy: {model.information.accuracy}
+              {model.information.accuracy_description && (
+                <div className="relative group/tooltip ml-1">
+                  <Info className="w-4 h-4 text-gray-400 cursor-help"/>
+                  <div
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-10">
+                    {model.information.accuracy_description}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          {cleaned_information && <KeyValueChips data={cleaned_information} beautify/>}
         </div>
 
         <div className="mt-4">

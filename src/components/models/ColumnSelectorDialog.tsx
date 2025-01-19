@@ -1,10 +1,9 @@
 import {useMemo, useState} from 'react';
 import {ArrowLeftRight, Check, CheckSquare, Filter, X} from 'lucide-react';
-import type {Dataset} from '../../types/dataset';
 import {SearchBar} from "../common/SearchBar.tsx";
 
 interface Props {
-  dataset: Dataset;
+  columns: string[];
   selectedColumns: string[];
   onColumnToggle: (column: string) => void;
   onClose: () => void;
@@ -12,7 +11,7 @@ interface Props {
 }
 
 export default function ColumnSelectorDialog({
-                                               dataset,
+                                               columns,
                                                selectedColumns,
                                                onColumnToggle,
                                                onClose,
@@ -24,22 +23,22 @@ export default function ColumnSelectorDialog({
   const columnCategories = useMemo(() => {
     const categories = new Map<string, string[]>();
 
-    dataset.columns.forEach(column => {
+    columns.forEach(column => {
       const category = column.split('_').slice(0, -1).join('_') || 'Other';
       const existing = categories.get(category) || [];
       categories.set(category, [...existing, column]);
     });
 
     return categories;
-  }, [dataset.columns]);
+  }, [columns]);
 
   const filteredColumns = useMemo(() => {
-    return dataset.columns.filter(column => {
+    return columns.filter(column => {
       const matchesSearch = column.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = !categoryFilter || column.startsWith(categoryFilter);
       return matchesSearch && matchesCategory;
     });
-  }, [dataset.columns, searchQuery, categoryFilter]);
+  }, [columns, searchQuery, categoryFilter]);
 
   const handleSelectAll = () => {
     const columnsToSelect = filteredColumns.filter(column => !selectedColumns.includes(column));
@@ -157,7 +156,7 @@ export default function ColumnSelectorDialog({
         {/* Action Buttons */}
         <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
           <div className="text-sm text-gray-500">
-            {selectedColumns.length} of {dataset.columns.length} total columns selected
+            {selectedColumns.length} of {columns.length} total columns selected
           </div>
           <div className="flex gap-2">
             <button

@@ -49,7 +49,9 @@ export default function Models() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div>
           <ModelTraining
-            onTrain={() => {
+            onTrain={async (config) => {
+              const model = await modelsApi.create(config)
+              quickUpdate([...(models ?? []), model])
             }}
           />
         </div>

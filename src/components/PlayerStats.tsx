@@ -5,10 +5,11 @@ import {PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, Responsiv
 import {Model, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
 import {modelsApi, playerStatisticsApi} from "../utils/api.ts";
-import {Feature, PlayerPositionPrediction} from "../types";
+import {Feature, PlayerPositionPrediction, positions} from "../types";
 import {formatFileSize} from "../utils/formatters.ts";
 import ErrorDisplay from "./common/ErrorDisplay.tsx";
 import SingleModelSelector from "./common/SingleModelSelector.tsx";
+import {roundToNearest} from "../utils";
 
 const MAX_PLAYER_MEASUREMENT_SIZE = 10 * 1024
 
@@ -48,13 +49,9 @@ export default function PlayerStats() {
         measurements: Object.fromEntries(Object.keys(adjustedFeatures).filter(id => adjustedFeatures[id].enabled).map(id => [id, adjustedFeatures[id].value])),
         model_id: selectedModel!.id
       });
-      const positions: Record<keyof PlayerPositionPrediction, string> = {
-        FW: 'Striker',
-        MF: 'Midfielder',
-        BF: 'Defender',
-        GK: 'Goad keeper'
-      };
-      setPosition(positions[Object.keys(predictions).reduce((best, current) => predictions[current as keyof PlayerPositionPrediction] > predictions[best as keyof PlayerPositionPrediction] ? current : best) as keyof PlayerPositionPrediction]);
+
+      const best = Object.keys(predictions).reduce((best, current) => predictions[current as keyof PlayerPositionPrediction] > predictions[best as keyof PlayerPositionPrediction] ? current : best) as keyof PlayerPositionPrediction
+      setPosition(positions[best] ? positions[best] : best);
       setPrediction(predictions);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to predict position');
@@ -63,7 +60,7 @@ export default function PlayerStats() {
     }
   };
 
-
+  console.log('position', position, 'prediction', prediction);
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center gap-2 mb-6">
@@ -72,7 +69,9 @@ export default function PlayerStats() {
       </div>
 
       {/* Model Selection */}
-      <SingleModelSelector models={availableModels} selectedModel={selectedModel} onSelect={model => setSelectedModel(model)} onRetry={reloadModels} error={modelsError} isLoading={isLoadingModels}/>
+      <SingleModelSelector models={availableModels} selectedModel={selectedModel}
+                           onSelect={model => setSelectedModel(model)} onRetry={reloadModels} error={modelsError}
+                           isLoading={isLoadingModels}/>
       {selectedModel && !modelsError && (
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
 
@@ -96,7 +95,7 @@ export default function PlayerStats() {
         </form>
       )}
       {error && (
-        <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg">
+        <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg mt-4">
           <AlertCircle className="w-5 h-5"/>
           <p>{error}</p>
         </div>
@@ -112,11 +111,14 @@ export default function PlayerStats() {
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={Object.entries(prediction!).map(([subject, value]) => ({subject, value: value * 100}))}>
+              <RadarChart data={Object.entries(prediction!).map(([subject, value]) => ({
+                subject,
+                value: roundToNearest(value * 100, 1)
+              }))}>
                 <PolarGrid/>
                 <PolarAngleAxis dataKey="subject"/>
                 <PolarRadiusAxis angle={45}
-                                 domain={[0,  Math.max(...Object.entries(prediction!).map((_, value) => value))]}/> {/* TODO improve */}
+                                 domain={[0, roundToNearest(Math.max(...Object.entries(prediction!).map((_, value) => value)), 1)]}/> {/* TODO improve */}
                 <Radar
                   name="Stats"
                   dataKey="value"
@@ -148,7 +150,7 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
     initialValue: [],
   })
 
-  const selectedCount = Object.keys(selectedFeatures).length
+  const selectedCount = Object.entries(selectedFeatures).filter(([, value]) => value.enabled).length
 
   const [isExtractingMeasures, setIsExtractingMeasures] = useState(false); // TODO: use
   const [fileUploadError, setFileUploadError] = useState<string | null>(null);
@@ -224,15 +226,26 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
   const getFeatureDefault = (feature: Feature) => (feature.minimum !== undefined && feature.maximum !== undefined) ? (feature.minimum + feature.maximum) / 2 : feature.minimum !== undefined ? feature.minimum : feature.maximum !== undefined ? feature.maximum : 0
 
   useEffect(() => {
-      if (features.some(feature => !feature.optional && selectedFeatures[feature.id] === undefined)) {
+      if (features.some(feature => selectedFeatures[feature.id] === undefined)) {
         updateSelectedFeatures(Object.fromEntries(features.map(feature => [feature.id, {
           value: getFeatureDefault(feature),
           enabled: !feature.optional
         }])))
       }
-    }, [features]
+    }, [features, selectedFeatures]
   )
 
+  const getToProgress = (feature: Feature) => {
+    const minimum = feature.minimum ?? 0
+    const maximum = feature.maximum ?? 100
+    return (value: number) => (value - minimum) * 100 / (maximum - minimum)
+  }
+
+  const getToValue = (feature: Feature) => {
+    const minimum = feature.minimum ?? 0
+    const maximum = feature.maximum ?? 100
+    return (progress: number) => minimum + (maximum - minimum) * progress / 100
+  }
 
   return isLoadingFeatures ? (
     <div className="flex items-center justify-center py-12">
@@ -284,16 +297,16 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
                 </button>
                 <span className="text-sm text-gray-600">
                           {feature.prefix && feature.prefix}
-                  {selectedFeatures[feature.id]?.value}
+                  {feature?.isInteger ? selectedFeatures[feature.id]?.value : selectedFeatures[feature.id]?.value?.toFixed(1)}
                   {feature.suffix && feature.suffix}
                         </span>
               </div>
               <input
                 type="range"
-                min={feature.minimum || 0}
-                max={feature.maximum || 100}
-                value={selectedFeatures[feature.id]?.value}
-                onChange={(e) => updateFeature(feature, parseInt(e.target.value, 10))}
+                min={0}
+                max={100}
+                value={selectedFeatures[feature.id] ? getToProgress(feature)(selectedFeatures[feature.id].value) : 0}
+                onChange={(e) => updateFeature(feature, getToValue(feature)(feature?.isInteger ? parseInt(e.target.value, 10) : parseFloat(e.target.value)))}
                 disabled={!selectedFeatures[feature.id]?.enabled}
                 className="w-full accent-primary-600 disabled:opacity-50 placeholder-primary-300 "
               />
