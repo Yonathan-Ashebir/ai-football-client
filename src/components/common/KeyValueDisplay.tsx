@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronUp, ChevronDown, X } from 'lucide-react';
+import {useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
+import {ChevronDown, ChevronUp} from 'lucide-react';
 
 type DataValue = string | number | string[];
 
@@ -21,14 +21,14 @@ function Chip({ content, maxLength = 12 }: { content: string; maxLength?: number
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="inline-flex items-center h-[20px] px-2 bg-gradient-to-r from-purple-50 to-purple-100/50
-          text-purple-700 rounded-full text-[11px] font-medium border border-purple-200/50
-          hover:from-purple-100 hover:to-purple-200/50 hover:border-purple-300/50
+        className="inline-flex items-center h-[20px] px-2 bg-gradient-to-r from-primary-50 to-primary-100/50
+          text-primary-700 rounded-full text-[11px] font-medium border border-primary-200/50
+          hover:from-primary-100 hover:to-primary-200/50 hover:border-primary-300/50
           transition-all duration-200 cursor-default shadow-sm"
       >
         <span className="relative">
           <span className="relative z-10">{displayText}</span>
-          <span className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent blur-sm" />
+          <span className="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent blur-sm" />
         </span>
       </motion.div>
 
@@ -109,7 +109,7 @@ export default function KeyValueDisplay({
               </div>
               <div className="bg-white/40 backdrop-blur-sm rounded-lg px-2.5 py-2
                 shadow-sm border border-gray-100/50
-                group-hover:bg-white/60 group-hover:border-purple-100/50 transition-all duration-200">
+                group-hover:bg-white/60 group-hover:border-primary-100/50 transition-all duration-200">
                 {renderValue(value)}
               </div>
             </motion.div>
@@ -127,9 +127,9 @@ export default function KeyValueDisplay({
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full flex items-center justify-center gap-1 text-[11px] font-medium
-              text-purple-600 hover:text-purple-700 py-1.5 rounded-lg
-              bg-purple-50/50 hover:bg-purple-100/50 border border-purple-200/30
-              hover:border-purple-300/30 transition-all duration-200 shadow-sm"
+              text-primary-600 hover:text-primary-700 py-1.5 rounded-lg
+              bg-primary-50/50 hover:bg-primary-100/50 border border-primary-200/30
+              hover:border-primary-300/30 transition-all duration-200 shadow-sm"
           >
             {isExpanded ? (
               <>
@@ -169,8 +169,8 @@ export default function KeyValueDisplay({
                     {Array.isArray(value) ? (
                       value.map((item, idx) => (
                         <span key={idx} className="inline-flex items-center h-[18px] px-2
-                          bg-purple-500/20 text-purple-200 rounded-full text-[11px] font-medium
-                          border border-purple-400/20 leading-none">
+                          bg-primary-500/20 text-primary-200 rounded-full text-[11px] font-medium
+                          border border-primary-400/20 leading-none">
                           {item.length > maxChipLength
                             ? `${item.slice(0, maxChipLength)}...`
                             : item}

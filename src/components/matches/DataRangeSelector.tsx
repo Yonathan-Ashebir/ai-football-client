@@ -26,7 +26,6 @@ export function DateRangeSelector({
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
   const [activeSelector, setActiveSelector] = useState<'start' | 'end' | null>(null);
 
-  console.log(startDate, endDate);
   useEffect(() => {
     if (startDate) {
       setCurrentMonth(startDate);

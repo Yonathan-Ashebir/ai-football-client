@@ -32,3 +32,12 @@ export interface PairwiseStatistic {
   expected_goals?: [number, number],
   both_teams_to_score_probability?: number
 }
+
+type MessageRole = 'user' | 'assistant';
+
+export type Message = {
+  role: MessageRole;
+  content: string;
+  error?: string;
+}
+

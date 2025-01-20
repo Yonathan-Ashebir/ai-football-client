@@ -1,10 +1,10 @@
-import {FormEvent, useEffect, useState} from 'react';
+import {FormEvent, useEffect, useMemo, useState} from 'react';
 import {AlertCircle, Loader2, Trophy, X} from 'lucide-react';
 import MatchHistorySelector from './prediction/MatchHistorySelector';
 import AdvancedMetrics from './prediction/AdvancedMetrics';
 import TeamSelect from './common/TeamSelect';
 import {usePrediction} from '../hooks/usePrediction';
-import {Model, ModelType, ModelTypes} from '../types/model';
+import {Model, ModelStatus, ModelType, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
 import {modelsApi} from "../utils/api.ts";
 import {findIntersection} from "../utils";
@@ -30,7 +30,7 @@ export const REQUIRED_MODEL_TYPES = [
 ] as const;
 
 
-type ModelSelections = { [K in ModelType]?: Model['id']}
+type ModelSelections = { [K in ModelType]?: Model['id'] }
 
 export default function MatchPrediction() {
   const [selectedModels, setSelectedModels] = useState<ModelSelections>({});
@@ -42,11 +42,13 @@ export default function MatchPrediction() {
   const {loading, error, result, metrics, getPrediction} = usePrediction();
 
   const {
-    resource: models,
+    resource: allModels,
     isLoading: isLoadingModels,
     error: modelsError,
     reload: reloadModels,
   } = useResource<Model[]>(modelsApi.list, [], {initialValue: []})
+
+  const models = useMemo(() => allModels.filter(m => m.status === ModelStatus.READY), [allModels])
 
   const {
     resource: teams,
@@ -56,7 +58,7 @@ export default function MatchPrediction() {
     quickUpdate: setTeams
   } = useResource<TournamentTeam[]>(async () => {
     let requests = []
-    for (const key  in selectedModels) {
+    for (const key in selectedModels) {
       const modelId = selectedModels[key as ModelType]!;
       requests.push(modelsApi.getModelTeams(modelId!))
     }
@@ -83,7 +85,7 @@ export default function MatchPrediction() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if(!homeTeam || !awayTeam) return
+    if (!homeTeam || !awayTeam) return
 
     await getPrediction({
       homeTeam,
@@ -104,14 +106,14 @@ export default function MatchPrediction() {
   };
 
   useEffect(() => { //TODO: when is better nessecary?
-    if(teams.length ===0){
+    if (teams.length === 0) {
       setHomeTeam('')
       setAwayTeam('')
     }
   }, [teams]);
 
   useEffect(() => {
-    if(homeTeam === '' || awayTeam === '') setShowResults(false);
+    if (homeTeam === '' || awayTeam === '') setShowResults(false);
   }, [homeTeam, awayTeam]);
 
 
@@ -135,8 +137,16 @@ export default function MatchPrediction() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Model Selection Section */}
-          <ModelsSelector models={models} selectedModels={selectedModels} errors={{"match_winner_with_scaler": modelsError, "both_teams_to_score_with_scaler": modelsError , "number_of_goals_with_scaler": modelsError}} onSelect={handleModelSelect} modelTypes={REQUIRED_MODEL_TYPES}
-          onRetry={reloadModels} loadingStates={{"match_winner_with_scaler": isLoadingModels, "both_teams_to_score_with_scaler": isLoadingModels , "number_of_goals_with_scaler": isLoadingModels}} />
+          <ModelsSelector models={models} selectedModels={selectedModels} errors={{
+            "match_winner_with_scaler": modelsError,
+            "both_teams_to_score_with_scaler": modelsError,
+            "number_of_goals_with_scaler": modelsError
+          }} onSelect={handleModelSelect} modelTypes={REQUIRED_MODEL_TYPES}
+                          onRetry={reloadModels} loadingStates={{
+            "match_winner_with_scaler": isLoadingModels,
+            "both_teams_to_score_with_scaler": isLoadingModels,
+            "number_of_goals_with_scaler": isLoadingModels
+          }}/>
 
           {isModelSelectionComplete && (
             <>

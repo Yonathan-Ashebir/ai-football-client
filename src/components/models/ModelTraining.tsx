@@ -65,7 +65,6 @@ export default function ModelTraining({onTrain}: Props) {
     error: columnsError,
     isLoading: areColumnsLoading
   } = useManaged<string[]>(() => (selectedDataset ? [[], datasetsApi.getViableInputColumns([selectedDataset], getCorrespondingModelType(trainingType))] : []), [selectedDataset])
-  console.log('columns:', columns, 'error:', columnsError)
 
   const handleBack = () => {
     switch (step) {

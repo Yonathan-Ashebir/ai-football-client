@@ -5,7 +5,6 @@ import TeamSelector from '../components/tournament/TeamSelector';
 import TournamentSettings from '../components/tournament/TournamentSettings';
 import VictoryAnimation from '../components/tournament/VictoryAnimation';
 import FeedbackMessage from '../components/tournament/FeedbackMessage';
-import TournamentTimeline from '../components/tournament/TournamentTimeline';
 import MatchResult from '../components/tournament/MatchResult';
 import {useTournament} from '../hooks/useTournament';
 import type {MatchPrediction, TournamentTeam} from '../types/tournament';
@@ -40,7 +39,7 @@ export default function Tournament() {
     setIsLoadingModels(true);
     setModelsError(null);
     try {
-      setModels(await modelsApi.list(["number_of_goals_with_scaler"]));
+      setModels((await modelsApi.list(["number_of_goals_with_scaler"])).filter(model => model.status === ModelStatus.READY));
     } catch (err) {
       setModelsError('Failed to load prediction models. Please try again.');
     } finally {

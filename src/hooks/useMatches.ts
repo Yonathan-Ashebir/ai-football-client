@@ -2,8 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from '../types/matches';
 import {knockoutsApi, modelsApi} from "../utils/api.ts";
 import stringSimilarity from "string-similarity"
-import {Model} from "../types/model.ts";
-import {getFromDate} from "../utils/dateUtils.ts";
+import {Model, ModelStatus} from "../types/model.ts";
 
 export function useMatches() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -15,7 +14,7 @@ export function useMatches() {
   const latestRequest = useRef<Promise<Match[]> | null>(null);
 
   const fetchMatches = async () => {
-    if(!startDate && !endDate) return
+    if (!startDate && !endDate) return
     setLoading(true);
     setError(null);
 
@@ -43,9 +42,10 @@ export function useMatches() {
     setPredictingMatchId(match.id);
     try {
       // Mock prediction for demo - replace with actual ML model call
-      const models = await modelsApi.list(['match_winner_with_scaler'])
+      const models = (await modelsApi.list(['match_winner_with_scaler'])).filter(m => m.status === ModelStatus.READY)
+
       if (models.length === 0) { // TODO: may be add a model selection option for the user, filtering/auto filtered by leagues ..., make it a server side thing (aliasing per model, per user, or globally ...)?
-        throw new Error("No match prediction models found")
+        throw new Error("No suitable match prediction models found")
       }
 
       const requiredTeamNames = [match.homeTeam.name, match.awayTeam.name]

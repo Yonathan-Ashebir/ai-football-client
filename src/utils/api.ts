@@ -1,10 +1,11 @@
 import axios from 'axios';
 import {Model, ModelType} from "../types/model.ts";
-import {Feature, PairwiseStatistic, PlayerPositionPrediction} from "../types";
+import {Feature, Message, PairwiseStatistic, PlayerPositionPrediction} from "../types";
 import {TournamentTeam} from "../types/tournament.ts";
 import {Dataset} from "../types/dataset.ts";
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from "../types/matches.ts";
 import {formatDateToYYYYMMDD, getFromDate} from "./dateUtils.ts";
+import {createManagedPromise} from "./index.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -19,7 +20,7 @@ const api = axios.create({
 export type DatasetType = 'Match Results' | 'Player Statistics'
 export const datasetTypeMap = {'Player Statistics': 'player_statistics', 'Match Results': 'match'}
 
-export interface Message {
+export interface SuccessMessage {
   message: string;
 }
 
@@ -64,7 +65,7 @@ export const datasetsApi = {
     return await resp.data['new_dataset'];
   },
 
-  delete: (id: string): Promise<Message> => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
+  delete: (id: string): Promise<SuccessMessage> => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
 
   download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
 
@@ -105,7 +106,7 @@ export const modelsApi = {
    * @returns {Promise} Resolves with a success message.
    */
 
-  async delete(modelId: string): Promise<Message> {
+  async delete(modelId: string): Promise<SuccessMessage> {
     let response = await api.delete(`/models/delete/${modelId}`);
     return await response.data;
   },
@@ -181,6 +182,32 @@ export const playerStatisticsApi = {
     });
     return resp.data['measurements'];
   },
+}
+
+export const assistantApi = {
+  streamChat: async (messages: Message[], onChunk: (chunk: string) => void, signal?: AbortSignal) => {
+    const thread_id = await api.post('/assistant/threads/create', {messages}, {signal}).then(resp => resp.data['thread_id']);
+
+    const result = createManagedPromise()
+    const eventSource = new EventSource(`${API_BASE_URL}/assistant/threads/${thread_id}/stream`);
+
+    eventSource.addEventListener('message', (event) => {
+      const message = event.data.replace(/\\n/g, '\n');
+      onChunk(message)
+    });
+
+    eventSource.addEventListener('end', () => {
+      eventSource.close()
+      result.resolve(null)
+    })
+
+    eventSource.onerror = function () {
+      eventSource.close()
+      result.reject("Error occurred");
+    }
+
+    return result.promise
+  }
 }
 
 // Error handler

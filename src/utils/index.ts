@@ -46,3 +46,20 @@ export function roundToNearest(num: number, decimalPlaces: number = 2) {
   const factor = Math.pow(10, decimalPlaces);
   return Math.round(num * factor) / factor
 }
+
+export function createManagedPromise() {
+  let resolveFunc: (_: any) => void | undefined, rejectFunc: (_: any) => void | undefined;
+
+  // Create a new promise and store the resolve and reject functions
+  const promise = new Promise((resolve, reject) => {
+    resolveFunc = resolve;  // Store the resolve function
+    rejectFunc = reject;    // Store the reject function
+  });
+
+  // Return the promise and an object to control it
+  return {
+    promise,
+    resolve: resolveFunc!,
+    reject: rejectFunc!
+  };
+}

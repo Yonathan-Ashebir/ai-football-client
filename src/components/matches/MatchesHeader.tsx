@@ -24,7 +24,6 @@ export default function MatchesHeader({
     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
       <div className="flex-1 flex flex-col">
         <span className='ml-1'><DateRangeSelector startDate={startDate} endDate={endDate} onStartDateChange={(date) => {
-          console.log('onStartDateChange', date);
           setStartDate(date)
         }}
           onEndDateChange={setEndDate}/></span>

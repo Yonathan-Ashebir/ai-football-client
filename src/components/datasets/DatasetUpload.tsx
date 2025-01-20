@@ -2,6 +2,8 @@ import {FormEvent, useCallback, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {AlertCircle, Loader2, Trophy, Upload, UserCircle, X} from 'lucide-react';
 import {DatasetType} from "../../utils/api.ts";
+import {MAXIMUM_DATASET_UPLOAD_SIZE, SUPPORTED_FILE_TYPES} from "../../data/constants.ts";
+import { formatFileSize } from '../../utils/formatters.ts';
 
 interface Props {
   onUpload: (file: File, name: string, type: DatasetType) => Promise<void>;
@@ -17,12 +19,17 @@ export default function DatasetUpload({ onUpload }: Props) {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        setError('File size must be less than 10MB');
+      const [name, extension] = file.name.split('.');
+      if (file.size > MAXIMUM_DATASET_UPLOAD_SIZE) {
+        setError(`File size must be less than ${formatFileSize(MAXIMUM_DATASET_UPLOAD_SIZE)}`);
+        return;
+      }
+      if(!SUPPORTED_FILE_TYPES.some(t => t.extension === extension)) {
+        setError(`Unknown file type ${extension}`)
         return;
       }
       setSelectedFile(file);
-      setName(file.name.split('.')[0]);
+      setName(name);
       setError('');
     }
   }, []);
@@ -142,12 +149,15 @@ export default function DatasetUpload({ onUpload }: Props) {
                 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <input {...getInputProps()} />
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <Upload className="mx-auto h-12 w-12 text-gray-400"/>
               <p className="mt-2 text-sm text-gray-600">
                 Drag and drop a file here, or click to select
               </p>
               <p className="mt-1 text-xs text-gray-500">
-                Maximum file size: 10MB
+                Maximum file size: {formatFileSize(MAXIMUM_DATASET_UPLOAD_SIZE)}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                (supports {SUPPORTED_FILE_TYPES.map( t => t.extension).join(', ')})
               </p>
             </div>
           )}

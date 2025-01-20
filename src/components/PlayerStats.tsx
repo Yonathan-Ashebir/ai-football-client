@@ -1,8 +1,8 @@
-import {FormEvent, useEffect, useState} from 'react';
+import {FormEvent, useEffect, useMemo, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {AlertCircle, Check, Loader2, UserCircle, X} from 'lucide-react';
+import {AlertCircle, Check, Info, Loader2, UserCircle, X, Lock} from 'lucide-react';
 import {PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer} from 'recharts';
-import {Model, ModelTypes} from '../types/model';
+import {Model, ModelStatus, ModelTypes} from '../types/model';
 import {useResource} from "../hooks/useResource.ts";
 import {modelsApi, playerStatisticsApi} from "../utils/api.ts";
 import {Feature, PlayerPositionPrediction, positions} from "../types";
@@ -10,6 +10,7 @@ import {formatFileSize} from "../utils/formatters.ts";
 import ErrorDisplay from "./common/ErrorDisplay.tsx";
 import SingleModelSelector from "./common/SingleModelSelector.tsx";
 import {roundToNearest} from "../utils";
+import {AnimatePresence, motion} from 'framer-motion';
 
 const MAX_PLAYER_MEASUREMENT_SIZE = 10 * 1024
 
@@ -27,7 +28,7 @@ export default function PlayerStats() {
 
 
   const {
-    resource: availableModels,
+    resource: allModels,
     isLoading: isLoadingModels,
     error: modelsError,
     reload: reloadModels,
@@ -35,6 +36,8 @@ export default function PlayerStats() {
     initialValue: [],
     onReload: () => setSelectedModel(null)
   })
+
+  const availableModels = useMemo(() => allModels.filter((model) => model.status === ModelStatus.READY), [allModels])
 
 
   const handleSubmit = async (e: FormEvent) => {
@@ -60,7 +63,6 @@ export default function PlayerStats() {
     }
   };
 
-  console.log('position', position, 'prediction', prediction);
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center gap-2 mb-6">
@@ -221,7 +223,7 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
       setSelectedFeatures({})
       setAllNecessaryFeaturesSelected(false)
     }
-  }, [])
+  }, [selectedModel])
 
   const getFeatureDefault = (feature: Feature) => (feature.minimum !== undefined && feature.maximum !== undefined) ? (feature.minimum + feature.maximum) / 2 : feature.minimum !== undefined ? feature.minimum : feature.maximum !== undefined ? feature.maximum : 0
 
@@ -276,41 +278,8 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {features.map((feature) => (
-            <div key={feature.id} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => toggleFeature(feature)}
-                  className={`flex items-center gap-2 text-sm font-medium ${
-                    selectedFeatures[feature.id]?.enabled ? 'text-primary-600' : 'text-gray-500'
-                  }`}
-                >
-                  {selectedFeatures[feature.id]?.enabled ? (
-                    <Check className="w-4 h-4" opacity={feature.optional ? 1 : 0.5}/>
-                  ) : (
-                    <div className="w-4 h-4 border rounded-sm"/>
-                  )}
-                  {feature.name}
-                  {feature.optional && (
-                    <span className="text-xs text-gray-400">(optional)</span>
-                  )}
-                </button>
-                <span className="text-sm text-gray-600">
-                          {feature.prefix && feature.prefix}
-                  {feature?.isInteger ? selectedFeatures[feature.id]?.value : selectedFeatures[feature.id]?.value?.toFixed(1)}
-                  {feature.suffix && feature.suffix}
-                        </span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={selectedFeatures[feature.id] ? getToProgress(feature)(selectedFeatures[feature.id].value) : 0}
-                onChange={(e) => updateFeature(feature, getToValue(feature)(feature?.isInteger ? parseInt(e.target.value, 10) : parseFloat(e.target.value)))}
-                disabled={!selectedFeatures[feature.id]?.enabled}
-                className="w-full accent-primary-600 disabled:opacity-50 placeholder-primary-300 "
-              />
-            </div>
+            <FeatureController feature={feature} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature}
+                               updateFeature={updateFeature} getToProgress={getToProgress} getToValue={getToValue}/>
           ))}
         </div>
       </div>
@@ -336,4 +305,188 @@ const Features = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllN
       )}
     </div>
   )
+}
+
+
+interface FeatureContollerProps {
+  feature: Feature;
+  selectedFeatures: Record<string, { enabled: boolean; value: number }>;
+  toggleFeature: (feature: Feature) => void;
+  updateFeature: (feature: Feature, value: number) => void;
+  getToProgress: (feature: Feature) => (value: number) => number;
+  getToValue: (feature: Feature) => (progress: number) => number;
+}
+
+function FeatureController({
+                             feature,
+                             selectedFeatures,
+                             toggleFeature,
+                             updateFeature,
+                             getToProgress,
+                             getToValue
+                           }: FeatureContollerProps) {
+  const isEnabled = selectedFeatures[feature.id]?.enabled;
+  const currentValue = selectedFeatures[feature.id]?.value;
+
+  const getProgressPercentage = () => {
+    if (!currentValue) return 0;
+    return getToProgress(feature)(currentValue);
+  };
+
+  return (
+    <div className="relative group">
+      <div className={`p-4 rounded-xl transition-all duration-200 ${
+        isEnabled
+          ? 'bg-primary-50 ring-2 ring-primary shadow-sm'
+          : 'bg-white hover:bg-gray-50 ring-1 ring-gray-200'
+      }`}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <button
+              type="button"
+              onClick={() => toggleFeature(feature)}
+              disabled={!feature.optional}
+              className={`relative group/checkbox ${!feature.optional ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            >
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${
+                isEnabled
+                  ? 'bg-primary text-white ring-2 ring-primary-300'
+                  : 'bg-white ring-2 ring-gray-300'
+              }`}>
+                <AnimatePresence>
+                  {isEnabled && (
+                    <motion.div
+                      initial={{scale: 0}}
+                      animate={{scale: 1}}
+                      exit={{scale: 0}}
+                    >
+                      <Check className="w-3 h-3"/>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+              {!feature.optional && (
+                <Lock className="absolute -top-1 -right-1 w-3 h-3 text-gray-400"/>
+              )}
+            </button>
+
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className={`font-medium transition-colors ${
+                  isEnabled ? 'text-primary' : 'text-gray-700'
+                }`}>
+                  {feature.name}
+                </span>
+                {feature.optional && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-100 text-primary-700 font-medium">
+                    Optional
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <motion.div
+            animate={{
+              scale: isEnabled ? 1 : 0.95,
+              opacity: isEnabled ? 1 : 0.7
+            }}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              isEnabled
+                ? 'bg-primary text-white'
+                : 'bg-gray-100 text-gray-500'
+            }`}
+          >
+            {feature.prefix}{feature.isInteger ? currentValue : currentValue?.toFixed(1)}{feature.suffix}
+          </motion.div>
+        </div>
+
+        {/* Slider */}
+        <div className="relative px-1">
+          <div className="relative h-14 flex items-center">
+            <div className="absolute inset-0 flex items-center">
+              {/* Track Background */}
+              <div className={`w-full h-3 rounded-full ${
+                isEnabled ? 'bg-primary-100' : 'bg-gray-100'
+              }`}>
+                {/* Filled Track */}
+                <motion.div
+                  className={`h-full rounded-full ${
+                    isEnabled ? 'bg-primary' : 'bg-gray-300'
+                  }`}
+                  style={{width: `${getProgressPercentage()}%`}}
+                  initial={false}
+                  animate={{opacity: isEnabled ? 0.3 : 0.1}}
+                  transition={{duration: 0.2}}
+                />
+              </div>
+            </div>
+
+            {/* Range Input */}
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={getProgressPercentage()}
+              onChange={(e) => {
+                const progress = parseFloat(e.target.value);
+                const value = getToValue(feature)(feature.isInteger ? Math.round(progress) : progress);
+                updateFeature(feature, value);
+              }}
+              disabled={!isEnabled}
+              className={`
+                absolute inset-0 w-full appearance-none bg-transparent
+                cursor-pointer disabled:cursor-not-allowed
+                [&::-webkit-slider-thumb]:appearance-none
+                [&::-webkit-slider-thumb]:w-7
+                [&::-webkit-slider-thumb]:h-7
+                [&::-webkit-slider-thumb]:rounded-xl
+                [&::-webkit-slider-thumb]:shadow-lg
+                [&::-webkit-slider-thumb]:transition-all
+                [&::-webkit-slider-thumb]:hover:scale-110
+                [&::-webkit-slider-thumb]:active:scale-95
+                [&::-webkit-slider-thumb]:border-4
+                [&::-webkit-slider-thumb]:border-white
+                [&::-webkit-slider-thumb]:relative
+                [&::-webkit-slider-thumb]:z-10
+                ${isEnabled
+                ? '[&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:hover:shadow-primary-200'
+                : '[&::-webkit-slider-thumb]:bg-gray-400 [&::-webkit-slider-thumb]:hover:shadow-gray-200'
+              }
+              `}
+            />
+          </div>
+
+          {/* Min/Max Labels */}
+          <div className="flex justify-between mt-1 px-1">
+            <span className="text-xs text-gray-500">
+              {feature.prefix}{(feature.isInteger ? feature.minimum : feature.minimum?.toFixed(1)) || 0}{feature.suffix}
+            </span>
+            <span className="text-xs text-gray-500">
+              {feature.prefix}{(feature.isInteger ? feature.maximum : feature.maximum?.toFixed(1)) || 100}{feature.suffix}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Info Tooltip */}
+      <div className="absolute -top-1 -right-1">
+        <div className="relative group/tooltip">
+          <div className="p-1 rounded-full bg-primary-100">
+            <Info className="w-3 h-3 text-primary"/>
+          </div>
+          <motion.div
+            initial={{opacity: 0, y: -5}}
+            whileHover={{opacity: 1, y: 0}}
+            className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg pointer-events-none"
+          >
+            Adjust {feature.name.toLowerCase()} within the range
+            of {feature.minimum || 0}{feature.suffix} to {feature.maximum || 100}{feature.suffix}
+            <div className="absolute bottom-0 right-4 -mb-1 w-2 h-2 bg-gray-900 transform rotate-45"/>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
 }

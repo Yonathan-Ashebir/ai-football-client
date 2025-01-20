@@ -12,7 +12,6 @@ interface Props {
 }
 
 export default function MatchesList({ matches, onPredict, isLoading, isPredicting, selectedMatch }: Props) {
-  console.log("Is loading", isLoading);
 
   if (isLoading) {
     return (

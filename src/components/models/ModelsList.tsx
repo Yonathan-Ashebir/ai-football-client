@@ -1,7 +1,8 @@
-import { Brain, AlertCircle } from 'lucide-react';
+import {Brain} from 'lucide-react';
 import ModelCard from './ModelCard';
 import ModelsListSkeleton from './ModelsListSkeleton';
-import type { Model } from '../../types/model';
+import type {Model} from '../../types/model';
+import ErrorDisplay from "../common/ErrorDisplay.tsx";
 
 interface Props {
   models: Model[];
@@ -12,7 +13,7 @@ interface Props {
   onRetry?: () => void;
 }
 
-export default function ModelsList({ models, onDelete, isLoading, searchQuery, error, onRetry }: Props) {
+export default function ModelsList({models, onDelete, isLoading, searchQuery, error, onRetry}: Props) {
   const filteredModels = models.filter(model =>
     model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     model.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -20,35 +21,19 @@ export default function ModelsList({ models, onDelete, isLoading, searchQuery, e
   );
 
   if (isLoading) {
-    return <ModelsListSkeleton />;
+    return <ModelsListSkeleton/>;
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error Loading Models</h3>
-            <p className="mt-1 text-sm text-red-700">{error}</p>
-            {onRetry && (
-              <button
-                onClick={onRetry}
-                className="mt-2 inline-flex items-center text-sm font-medium text-red-600 hover:text-red-500"
-              >
-                Try Again
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      <ErrorDisplay header={'Error Loading Models'} message={error} onRetry={onRetry}/>
     );
   }
 
   if (models.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <Brain className="mx-auto h-12 w-12 text-gray-400" />
+        <Brain className="mx-auto h-12 w-12 text-gray-400"/>
         <h3 className="mt-2 text-sm font-semibold text-gray-900">No models trained yet</h3>
         <p className="mt-1 text-sm text-gray-500">Train your first model to get started.</p>
       </div>
