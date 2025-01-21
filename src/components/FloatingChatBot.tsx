@@ -81,7 +81,6 @@ export default function FloatingChatBot({
                      w-full sm:w-96 h-full sm:h-[600px]
                      bg-gradient-to-b from-white to-primary-50
                      sm:rounded-2xl shadow-2xl overflow-hidden
-                     border border-primary-100
                      flex flex-col"
           >
             {/* Header */}

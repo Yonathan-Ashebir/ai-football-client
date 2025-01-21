@@ -6,6 +6,9 @@ import {Dataset} from "../types/dataset.ts";
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from "../types/matches.ts";
 import {formatDateToYYYYMMDD, getFromDate} from "./dateUtils.ts";
 import {createManagedPromise} from "./index.ts";
+import {EventSourcePolyfill} from 'event-source-polyfill';
+
+const EventSource = EventSourcePolyfill;
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -189,7 +192,7 @@ export const assistantApi = {
     const thread_id = await api.post('/assistant/threads/create', {messages}, {signal}).then(resp => resp.data['thread_id']);
 
     const result = createManagedPromise()
-    const eventSource = new EventSource(`${API_BASE_URL}/assistant/threads/${thread_id}/stream`);
+    const eventSource = new EventSource(`${API_BASE_URL}/assistant/threads/${thread_id}/stream`, {headers: {'ngrok-skip-browser-warning': 'true'}});
 
     eventSource.addEventListener('message', (event) => {
       const message = event.data.replace(/\\n/g, '\n');
