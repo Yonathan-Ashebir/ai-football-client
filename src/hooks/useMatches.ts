@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from '../types/matches';
 import {knockoutsApi, modelsApi} from "../utils/api.ts";
-import stringSimilarity from "string-similarity"
 import {Model, ModelStatus} from "../types/model.ts";
+import {matchString} from "../utils";
 
 export function useMatches() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -48,32 +48,27 @@ export function useMatches() {
         throw new Error("No suitable match prediction models found")
       }
 
-      const requiredTeamNames = [match.homeTeam.name, match.awayTeam.name]
-      let highestSimilarityScore = 0
+      const requiredTeamNames = [[match.homeTeam.shortName, match.homeTeam.name], [match.awayTeam.shortName, match.awayTeam.name]]
+      let bestSimilarityScore = Infinity
       let bestMatchModel: Model | null = null
       let bestMatchingTeams: string[] | null = null
       for (const model of models) {
-        const modelTeams = (await modelsApi.getModelTeams(model.id)).map(t => t.name); // Get teams for the current model
+        const modelTeams = (await modelsApi.getModelTeams(model.id)).map(t => [t.name, t.id]); // Get teams for the current model
 
         // Calculate total similarity score between model teams and required team names
         let totalSimilarityScore = 0;
         const matchingTeams: string[] = [];
 
         for (const requiredTeam of requiredTeamNames) {
-          const {bestMatch, bestMatchIndex} = stringSimilarity.findBestMatch(
-            requiredTeam,
-            modelTeams
-          );
-
-          if (bestMatch.rating > 0.5) { // Only consider matches with a similarity rating above a threshold
-            totalSimilarityScore += bestMatch.rating;
-            matchingTeams.push(modelTeams[bestMatchIndex]);
-          }
+          const match = matchString(requiredTeam, modelTeams, 0.4)!
+          if (!match) continue;
+            totalSimilarityScore += match.bestScore
+            matchingTeams.push(match.matchedArray[0]);
         }
 
         // Update the best match if this model has a higher total similarity score
-        if (totalSimilarityScore > highestSimilarityScore && matchingTeams.length === requiredTeamNames.length) {
-          highestSimilarityScore = totalSimilarityScore;
+        if (totalSimilarityScore < bestSimilarityScore && matchingTeams.length === requiredTeamNames.length) {
+          bestSimilarityScore = totalSimilarityScore;
           bestMatchModel = model;
           bestMatchingTeams = matchingTeams;
         }
@@ -82,6 +77,8 @@ export function useMatches() {
       if (!bestMatchModel || !bestMatchingTeams) {
         throw new Error(`No models found for these teams`);
       }
+
+      console.log(`Predicting for ${bestMatchingTeams[0]} vs ${bestMatchingTeams[1]}`);
 
       const prediciton = (await knockoutsApi.getPairwiseStatistics({
         teams: bestMatchingTeams,

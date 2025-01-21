@@ -15,9 +15,6 @@ export default function DatasetCard({ dataset, onDelete, onPreview, getDownloadL
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
       className="group relative flex flex-col justify-between bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-primary-100"
     >
       {/* Header */}

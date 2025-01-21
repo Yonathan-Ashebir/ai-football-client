@@ -1,8 +1,10 @@
-import {Brain} from 'lucide-react';
+import {Brain, Trash2Icon} from 'lucide-react';
 import ModelCard from './ModelCard';
 import ModelsListSkeleton from './ModelsListSkeleton';
 import type {Model} from '../../types/model';
 import ErrorDisplay from "../common/ErrorDisplay.tsx";
+import {useState} from "react";
+import {GeneralModal} from "../common/GeneralModal.tsx";
 
 interface Props {
   models: Model[];
@@ -19,6 +21,8 @@ export default function ModelsList({models, onDelete, isLoading, searchQuery, er
     model.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
     model.datasets?.some(dataset => dataset.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const [confirmDeletionModel, setConfirmDeletionModel] = useState<Model | null>(null);
 
   if (isLoading) {
     return <ModelsListSkeleton/>;
@@ -57,9 +61,26 @@ export default function ModelsList({models, onDelete, isLoading, searchQuery, er
         <ModelCard
           key={model.id}
           model={model}
-          onDelete={onDelete}
+          onDelete={() => setConfirmDeletionModel(model)}
         />
       ))}
+
+
+      {confirmDeletionModel && <GeneralModal actions={[{
+        onClick: () => setConfirmDeletionModel(null),
+        content: 'Cancel',
+        className: 'text-gray-600 hover:bg-gray-100',
+      },
+        {
+          onClick: () => {
+            onDelete(confirmDeletionModel!.id)
+            setConfirmDeletionModel(null);
+          },
+          content: 'Confirm',
+          icon: Trash2Icon,
+          className: 'bg-red-600 text-white hover:bg-red-700',
+        },]} title={"Confirmation"}> Are you sure you want to
+        delete {confirmDeletionModel.name}</GeneralModal>}
     </div>
   );
 }

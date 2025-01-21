@@ -1,3 +1,5 @@
+import Fuse, {IFuseOptions} from "fuse.js";
+
 export function findIntersection<Type>(arrays: Type[][], areEqual: (a: Type, b: Type) => boolean = (a, b) => a === b): Type[] {
   if (arrays.length === 0) return [];
 
@@ -63,3 +65,49 @@ export function createManagedPromise() {
     reject: rejectFunc!
   };
 }
+
+/**
+ * Determines the best match for an array of strings (`searchFor`)
+ * against a 2D array of strings (`searchIn`) using Fuse.js.
+ *
+ * Returns the string array (subarray) from `searchIn` that achieved the best match
+ * along with the score of the best match.
+ *
+ * @param searchFor - An array of strings to search for.
+ * @param searchIn - A 2D array of strings to search in.
+ * @param threshold
+ * @returns An object with the best matching string array and the best match score.
+ */
+export const matchString = (
+  searchFor: string[],
+  searchIn: string[][], threshold: number = 0.3
+): { matchedArray: string[]; bestScore: number, bestTerm: string } | null => {
+
+  const options: IFuseOptions<string> = {
+    includeScore: true,
+    threshold,
+  };
+
+  let bestScore = Infinity;
+  let bestMatchArray: string[] | null = null;
+  let bestTerm: string | null = null;
+
+  for (const subArray of searchIn) {
+    const fuse = new Fuse(subArray, options);
+
+    for (const term of searchFor) {
+      const results = fuse.search(term);
+
+      if (results.length > 0) {
+        const lowestScore = results[0].score || 0;
+        if (lowestScore < bestScore) {
+          bestScore = lowestScore;
+          bestMatchArray = subArray;
+          bestTerm = term
+        }
+      }
+    }
+  }
+
+  return bestMatchArray ? {matchedArray: bestMatchArray, bestScore, bestTerm: bestTerm!} : null;
+};

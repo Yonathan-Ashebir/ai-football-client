@@ -1,9 +1,11 @@
 import {useState} from 'react';
-import {AlertCircle} from 'lucide-react';
+import {AlertCircle, Trash2Icon} from 'lucide-react';
 import type {Dataset} from '../../types/dataset';
 import DatasetPreview from './DatasetPreview';
 import {datasetsApi} from "../../utils/api.ts";
 import DatasetCard from './DatasetCard.tsx';
+import DatasetCardSkeleton from "./DatasetCardSkeleton.tsx";
+import {GeneralModal} from "../common/GeneralModal.tsx";
 
 interface Props {
   datasets: Dataset[];
@@ -14,30 +16,15 @@ interface Props {
 
 export default function DatasetList({datasets, onDelete, isLoading, searchQuery}: Props) {
   const [previewDataset, setPreviewDataset] = useState<Dataset | null>(null);
+  const [confirmDeletionDataset, setConfirmDeletionDataset] = useState<Dataset | null>(null);
+  const [historicalCount, setHistoricalCount] = useState(datasets.length);
 
+  if (datasets.length !== historicalCount) setHistoricalCount(datasets.length);
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[...Array(4)].map((_, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden relative">
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"/>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-48"/>
-              </div>
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-32"/>
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-24"/>
-              </div>
-              <div className="space-y-1">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-6 bg-gray-200 rounded animate-pulse w-full"/>
-                ))}
-              </div>
-            </div>
-            <div
-              className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"/>
-          </div>
+        {[...Array(historicalCount)].map((_, index) => (
+          <DatasetCardSkeleton key={index}/>
         ))}
       </div>
     );
@@ -67,7 +54,8 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {datasets.map((dataset) => (
-        <DatasetCard dataset={dataset} onDelete={onDelete} getDownloadLink={datasetsApi.getDownloadLink}
+        <DatasetCard dataset={dataset} onDelete={() => setConfirmDeletionDataset(dataset)}
+                     getDownloadLink={datasetsApi.getDownloadLink}
                      onPreview={setPreviewDataset}/>
       ))}
 
@@ -77,6 +65,22 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
           onClose={() => setPreviewDataset(null)}
         />
       )}
+
+      {confirmDeletionDataset && <GeneralModal actions={[{
+        onClick: () => setConfirmDeletionDataset(null),
+        content: 'Cancel',
+        className: 'text-gray-600 hover:bg-gray-100',
+      },
+        {
+          onClick: () => {
+            onDelete(confirmDeletionDataset!.id)
+            setConfirmDeletionDataset(null);
+          },
+          content: 'Confirm',
+          icon: Trash2Icon,
+          className: 'bg-red-600 text-white hover:bg-red-700',
+        },]} title={"Confirmation"}> Are you sure you want to
+        delete {confirmDeletionDataset.name}</GeneralModal>}
     </div>
   );
 }

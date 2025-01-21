@@ -52,9 +52,10 @@ export function DateRangeSelector({
     }
 
     // Add next month's days to complete the grid
-    const remainingDays = 42 - days.length; // 6 rows * 7 days = 42
-    for (let i = 1; i <= remainingDays; i++) {
-      days.push(new Date(year, month + 1, i));
+    let i = new Date(year, month + 1, 0).getDay();
+    let j = 1;
+    for (; i < 6; i++, j++) {
+      days.push(new Date(year, month, daysInMonth + j));
     }
 
     return days;
@@ -117,7 +118,7 @@ export function DateRangeSelector({
           if (isOpen) {
             setIsOpen(false);
             setActiveSelector(null)
-          }else {
+          } else {
             setIsOpen(true);
             setActiveSelector('start');
           }
@@ -164,48 +165,53 @@ export function DateRangeSelector({
             </div>
 
             <div className="grid grid-cols-7 gap-1">
-              {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-400 py-2">
-                  {day}
-                </div>
-              ))}
+              <AnimatePresence mode='popLayout'>
+                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+                  <div key={day} className="text-center text-sm font-medium text-gray-400 py-2">
+                    {day}
+                  </div>
+                ))}
 
-              {getDaysInMonth(currentMonth).map((date, index) => {
-                const isDisabled = isDateDisabled(date);
-                const isSelected = startDate?.toDateString() === date.toDateString() ||
-                  endDate?.toDateString() === date.toDateString();
-                const isInRange = isDateInRange(date);
-                const isInHoverRange = isDateInHoverRange(date);
-                const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+                {getDaysInMonth(currentMonth).map((date) => {
+                  const isDisabled = isDateDisabled(date);
+                  const isSelected = startDate?.toDateString() === date.toDateString() ||
+                    endDate?.toDateString() === date.toDateString();
+                  const isInRange = isDateInRange(date);
+                  const isInHoverRange = isDateInHoverRange(date);
+                  const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
 
-                return (
-                  <motion.button
-                    key={index}
-                    whileHover={{scale: !isDisabled ? 1.1 : 1}}
-                    whileTap={{scale: !isDisabled ? 0.95 : 1}}
-                    onClick={() => !isDisabled && handleDateClick(date)}
-                    onMouseEnter={() => !isDisabled && setHoverDate(date)}
-                    onMouseLeave={() => setHoverDate(null)}
-                    disabled={isDisabled}
-                    className={`
+                  return (
+                    <motion.button
+                      key={date.getTime()}
+                      initial={{opacity: 0}}
+                      animate={{opacity: 1}}
+                      exit={{opacity: 0}}
+                      whileHover={{scale: !isDisabled ? 1.1 : 1}}
+                      whileTap={{scale: !isDisabled ? 0.95 : 1}}
+                      onClick={() => !isDisabled && handleDateClick(date)}
+                      onMouseEnter={() => !isDisabled && setHoverDate(date)}
+                      onMouseLeave={() => setHoverDate(null)}
+                      disabled={isDisabled}
+                      className={`
                       relative h-10 rounded-lg text-sm font-medium transition-colors px-2
-                      ${isDisabled ? 'text-red-300 cursor-not-allowed' : 'hover:text-primary-600'}
+                      ${isDisabled ? 'text-red-300 cursor-not-allowed' : isSelected ? '' : 'hover:text-primary-600'}
                       ${!isCurrentMonth && !isSelected && !isInRange ? 'text-gray-400' : 'text-gray-700'}
                       ${isSelected ? 'bg-primary-600 text-white' : ''}
                       ${(isInRange || isInHoverRange) && !isSelected ? 'bg-primary-100' : ''}
                     `}
-                  >
-                    {date.getDate()}
-                    {(isInRange || isInHoverRange) && !isSelected && (
-                      <motion.div
-                        layoutId="range-highlight"
-                        className="absolute inset-0 bg-primary-100 rounded-lg -z-10"
-                        transition={{duration: 0.2}}
-                      />
-                    )}
-                  </motion.button>
-                );
-              })}
+                    >
+                      {date.getDate()}
+                      {(isInRange || isInHoverRange) && !isSelected && (
+                        <motion.div
+                          layoutId="range-highlight"
+                          className="absolute inset-0 bg-primary-100 rounded-lg -z-10"
+                          transition={{duration: 0.2}}
+                        />
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </AnimatePresence>
             </div>
 
             {/*<div className="mt-4 flex justify-between text-sm text-gray-500">

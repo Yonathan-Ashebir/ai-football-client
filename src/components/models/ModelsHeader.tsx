@@ -1,4 +1,4 @@
-import {Search, RefreshCw} from 'lucide-react';
+import {RefreshCw} from 'lucide-react';
 import {SearchBar} from "../common/SearchBar.tsx";
 
 interface Props {

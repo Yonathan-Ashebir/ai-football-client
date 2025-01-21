@@ -69,7 +69,7 @@ export const datasetsApi = {
 
   download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
 
-  getDownloadLink: (id: string) => `${API_BASE_URL}datasets/download/${id}`,
+  getDownloadLink: (id: string) => `${API_BASE_URL}/datasets/download/${id}`,
 
   getViableInputColumns: (datasetIDs: string[], targetModelType: ModelType) => api.get('/datasets/get_viable_input_columns', {
     params: {
@@ -214,7 +214,7 @@ export const assistantApi = {
 api.interceptors.response.use(
   response => response,
   error => {
-    const message = error.response?.data?.message || error.response?.data?.error || 'An error occurred';
+    const message = error.response?.data?.message || error.response?.data?.error || 'Error occurred';
     // You can implement a global error notification system here
     console.error('API Error:', message);
     return Promise.reject(new Error(message));

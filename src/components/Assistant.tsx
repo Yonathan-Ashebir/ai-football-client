@@ -13,8 +13,11 @@ export function Assistant() {
   const [isConnecting, setIsConnecting] = useState(true); /* DEMO behaviour as placeholder for future implementation changes and improvemnts */
 
   const abort = () => {
-    abortController.current?.abort();
-    abortController.current = null;
+    if (abortController.current !== null) {
+      abortController.current.abort();
+      abortController.current = null;
+      setIsStreaming(false);
+    }
   }
 
   const updateSteamingMessage = (chunk: string, error?: string) => {
@@ -41,9 +44,12 @@ export function Assistant() {
         if (myController == abortController.current) updateSteamingMessage(chunk);
       }, myController.signal);
     } catch (err) {
-      updateSteamingMessage("", err instanceof Error ? err.message : "Error occurred");
+      if (myController === abortController.current) updateSteamingMessage("", err instanceof Error ? err.message : "Error occurred");
     } finally {
-      setIsStreaming(false);
+      if (myController === abortController.current) {
+        abortController.current = null
+        setIsStreaming(false);
+      }
     }
   }
 

@@ -9,3 +9,39 @@ input {
 * {
     box-sizing: border-box !important;
 }
+
+.markdown-container ol,ul {
+    list-style: inside !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.markdown-container ol{
+    list-style-type: decimal !important;
+}
+
+.markdown-container ul{
+    list-style-type: square !important;
+}
+/*.markdown-container {*/
+/*    font-family: Arial, sans-serif;*/
+/*    line-height: 1.6;*/
+/*}*/
+
+/*.markdown-container h1,*/
+/*.markdown-container h2,*/
+/*.markdown-container h3 {*/
+/*    margin-top: 1em;*/
+/*}*/
+
+/*.markdown-container ul {*/
+/*    padding-left: 20px;*/
+/*}*/
+
+/*.markdown-container code {*/
+/*    background-color: #f4f4f4;*/
+/*    padding: 2px 4px;*/
+/*    border-radius: 4px;*/
+/*}*/

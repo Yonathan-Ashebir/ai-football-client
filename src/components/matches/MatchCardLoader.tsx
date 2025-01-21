@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function MatchCardLoader() {
   return (
-    <div className="relative bg-white rounded-2xl shadow-lg p-6 overflow-hidden min-h-[420px]">
+    <div className="relative bg-white rounded-2xl shadow-lg p-6 overflow-hidden">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-white opacity-50" />
 

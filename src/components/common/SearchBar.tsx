@@ -5,14 +5,15 @@ interface Props {
   searchQuery: string;
   disabled?: boolean;
   setSearchQuery: (query: string) => void;
+  placeholder?: string;
 }
 
-export function SearchBar({searchQuery, setSearchQuery, disabled = false, large = false}: Props) {
+export function SearchBar({searchQuery, setSearchQuery, disabled = false, large = false, placeholder}: Props) {
   if (large) return <div className="relative mb-6">
     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-400"/>
     <input
       type="text"
-      placeholder="Search available models..."
+      placeholder={placeholder ?? "Search..."}
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       disabled={disabled}
@@ -24,7 +25,7 @@ export function SearchBar({searchQuery, setSearchQuery, disabled = false, large 
     <Search className="absolute z-10 left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"/>
     <input
       type="text"
-      placeholder="Search teams..."
+      placeholder={placeholder ?? "Search..."}
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       className="w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg bg-white/80 backdrop-blur-sm
