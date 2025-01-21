@@ -70,7 +70,17 @@ export const datasetsApi = {
 
   delete: (id: string): Promise<SuccessMessage> => api.post(`/datasets/delete/${id}`).then(resp => resp.data),
 
-  download: (id: string) => api.get(`/datasets/download/${id}`, {responseType: 'blob'}).then(resp => resp.data),
+  download: async (dataset: Dataset) => {
+    const response: Blob = await api.get(`/datasets/download/${dataset.id}`, {responseType: 'blob'}).then(resp => resp.data)
+    const blob = new Blob([response]);
+
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', dataset.name);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  },
 
   getDownloadLink: (id: string) => `${API_BASE_URL}/datasets/download/${id}`,
 

@@ -55,7 +55,8 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {datasets.map((dataset) => (
         <DatasetCard dataset={dataset} onDelete={() => setConfirmDeletionDataset(dataset)}
-                     getDownloadLink={datasetsApi.getDownloadLink}
+          /*  getDownloadLink={datasetsApi.getDownloadLink}*/
+                     download={() => datasetsApi.download(dataset)}
                      onPreview={setPreviewDataset}/>
       ))}
 

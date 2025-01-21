@@ -1,6 +1,6 @@
 import {AnimatePresence, motion} from 'framer-motion';
 import {ChevronRight, Database, Download, Eye, FileText, Trash2} from 'lucide-react';
-import { Dataset } from '../../types/dataset';
+import {Dataset} from '../../types/dataset';
 import {formatFileSize} from "../../utils/formatters.ts";
 import {formatDistanceToNow} from "../../utils/dateUtils.ts";
 
@@ -8,10 +8,10 @@ interface Props {
   dataset: Dataset;
   onDelete: (id: string) => void;
   onPreview: (dataset: Dataset) => void;
-  getDownloadLink: (id: string) => string;
+  download: (id: string) => void;
 }
 
-export default function DatasetCard({ dataset, onDelete, onPreview, getDownloadLink }: Props) {
+export default function DatasetCard({dataset, onDelete, onPreview, download}: Props) {
 
   return (
     <motion.div
@@ -83,35 +83,36 @@ export default function DatasetCard({ dataset, onDelete, onPreview, getDownloadL
             >
               <Eye className="w-5 h-5"/>
             </motion.button>
-            <motion.a
+            <motion.button
               whileHover={{scale: 1.1}}
               whileTap={{scale: 0.9}}
-              href={getDownloadLink(dataset.id)}
+              onClick={() => download(dataset.id)}
               className="p-2 rounded-lg text-primary hover:bg-primary-100 transition-colors"
               title="Download Dataset"
             >
-              <Download className="w-5 h-5" />
-            </motion.a>
+              <Download className="w-5 h-5"/>
+            </motion.button>
           </div>
           <AnimatePresence>
             <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              initial={{opacity: 0, scale: 0.8}}
+              animate={{opacity: 1, scale: 1}}
+              exit={{opacity: 0, scale: 0.8}}
+              whileHover={{scale: 1.1}}
+              whileTap={{scale: 0.9}}
               onClick={() => onDelete(dataset.id)}
               className="p-2 rounded-lg text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-200"
               title="Delete Dataset"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-5 h-5"/>
             </motion.button>
           </AnimatePresence>
         </div>
       </div>
 
       {/* Hover Effect Overlay */}
-      <div className="absolute inset-0 border-2 border-primary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div
+        className="absolute inset-0 border-2 border-primary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"/>
     </motion.div>
   );
 }

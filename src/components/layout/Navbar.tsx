@@ -101,11 +101,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden"
           >
-            <div className={`px-4 pt-2 pb-4 space-y-1 ${
-              isScrolled
-                ? 'bg-white'
-                : 'bg-white/80 backdrop-blur-md'
-            } border-t border-primary-100/50`}>
+            <div className={`px-4 pt-2 pb-4 space-y-1 border-t border-primary-100/50`}>
               {navItems.map((item) => (
                 <Link
                   key={item.path}
