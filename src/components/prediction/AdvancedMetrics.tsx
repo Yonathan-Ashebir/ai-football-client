@@ -7,10 +7,9 @@ interface Props {
   homeTeam: string;
   awayTeam: string;
   metrics: TeamMetrics;
-  isLoading?: boolean;
 }
 
-export default function AdvancedMetrics({ homeTeam, awayTeam, metrics, isLoading }: Props) {
+export default function AdvancedMetrics({ homeTeam, awayTeam, metrics }: Props) {
   const xgData = [
     { name: homeTeam, xG: metrics.homeXG },
     { name: awayTeam, xG: metrics.awayXG },

@@ -1,15 +1,15 @@
 import {FormEvent, useEffect, useMemo, useState} from 'react';
 import {AlertCircle, Loader2, Trophy, X} from 'lucide-react';
-import MatchHistorySelector from './prediction/MatchHistorySelector';
-import AdvancedMetrics from './prediction/AdvancedMetrics';
-import TeamSelect from './common/TeamSelect';
-import {usePrediction} from '../hooks/usePrediction';
-import {Model, ModelStatus, ModelType, ModelTypes} from '../types/model';
-import {useResource} from "../hooks/useResource.ts";
-import {modelsApi} from "../utils/api.ts";
-import {findIntersection} from "../utils";
-import {TournamentTeam} from "../types/tournament.ts";
-import ModelsSelector from "./common/ModelsSelector.tsx";
+import MatchHistorySelector from './MatchHistorySelector.tsx';
+import AdvancedMetrics from './AdvancedMetrics.tsx';
+import TeamSelect from '../common/TeamSelect.tsx';
+import {usePrediction} from '../../hooks/usePrediction.ts';
+import {Model, ModelStatus, ModelType, ModelTypes} from '../../types/model.ts';
+import {useResource} from "../../hooks/useResource.ts";
+import {modelsApi} from "../../utils/api.ts";
+import {findIntersection} from "../../utils";
+import {TournamentTeam} from "../../types/tournament.ts";
+import ModelsSelector from "../common/ModelsSelector.tsx";
 
 export const REQUIRED_MODEL_TYPES = [
   {

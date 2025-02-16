@@ -1,4 +1,4 @@
-import PlayerStats from '../components/PlayerStats';
+import PlayerStats from '../components/assistant/PlayerStats.tsx';
 
 export default function PlayerAnalysis() {
   return (

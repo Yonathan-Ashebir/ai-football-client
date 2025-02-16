@@ -41,7 +41,7 @@ export default function Tournament() {
     setModelsError(null);
     try {
       setModels((await modelsApi.list(["number_of_goals_with_scaler"])).filter(model => model.status === ModelStatus.READY));
-    } catch (err) {
+    } catch {
       setModelsError('Failed to load prediction models. Please try again.');
     } finally {
       setIsLoadingModels(false);

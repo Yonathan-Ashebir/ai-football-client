@@ -2,14 +2,14 @@ import {FormEvent, useEffect, useMemo, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {AlertCircle, Check, Info, Loader2, UserCircle, X, Lock} from 'lucide-react';
 import {PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer} from 'recharts';
-import {Model, ModelStatus, ModelTypes} from '../types/model';
-import {useResource} from "../hooks/useResource.ts";
-import {modelsApi, playerStatisticsApi} from "../utils/api.ts";
-import {Feature, PlayerPositionPrediction, positions} from "../types";
-import {formatFileSize} from "../utils/formatters.ts";
-import ErrorDisplay from "./common/ErrorDisplay.tsx";
-import SingleModelSelector from "./common/SingleModelSelector.tsx";
-import {roundToNearest} from "../utils";
+import {Model, ModelStatus, ModelTypes} from '../../types/model.ts';
+import {useResource} from "../../hooks/useResource.ts";
+import {modelsApi, playerStatisticsApi} from "../../utils/api.ts";
+import {Feature, PlayerPositionPrediction, positions} from "../../types";
+import {formatFileSize} from "../../utils/formatters.ts";
+import ErrorDisplay from "../common/ErrorDisplay.tsx";
+import SingleModelSelector from "../common/SingleModelSelector.tsx";
+import {roundToNearest} from "../../utils";
 import {AnimatePresence, motion} from 'framer-motion';
 
 const MAX_PLAYER_MEASUREMENT_SIZE = 10 * 1024

@@ -1,4 +1,4 @@
-import MatchPredictionComponent from '../components/MatchPrediction.tsx';
+import MatchPredictionComponent from '../components/prediction/MatchPrediction.tsx';
 
 export default function MatchPrediction() {
   return (

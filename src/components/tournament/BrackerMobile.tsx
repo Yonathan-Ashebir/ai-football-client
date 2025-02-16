@@ -1,4 +1,4 @@
-import {HTMLAttributes, useState} from 'react';
+import {HTMLAttributes, useEffect, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import type {MatchPrediction} from '../../types/tournament';
 import MatchCard from './MatchCard';
@@ -34,9 +34,24 @@ export default function BracketMobile({
   const [isProceeding, setIsProceeding] = useState(false);
   const [proceedError, setProceedError] = useState<{ message: string } | null>(null);
 
+  const querterFinalRef = useRef<HTMLDivElement>(null);
+  const semiFinalRef = useRef<HTMLDivElement>(null);
+  const finalRef = useRef<HTMLDivElement>(null);
+
   const getWinnerClass = (match: MatchPrediction) => {
     return match.winner === match.homeTeam.id ? 'home-winner' : 'away-winner';
   };
+
+  useEffect(() => {
+    console.log("Scroll to", currentRound)
+    if (currentRound === 'quarterfinal') {
+      querterFinalRef.current?.scrollIntoView({behavior: 'smooth'});
+    } else if (currentRound === 'semifinal') {
+      semiFinalRef.current?.scrollIntoView({behavior: 'smooth'});
+    } else if (currentRound === 'final') {
+      finalRef.current?.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [currentRound]);
 
   const onProceed = async () => {
     setIsProceeding(true);
@@ -60,8 +75,9 @@ export default function BracketMobile({
         </h2>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 relative">
         {/* Quarter Finals Section */}
+        <div ref={querterFinalRef} className='absolute bottom-[calc(100%+6em)]'></div>
         <div className="space-y-3">
           <h3 className="text-gray-400 text-sm font-medium ml-2">Quarter Finals</h3>
           <div className="grid grid-cols-1 gap-3">
@@ -86,7 +102,8 @@ export default function BracketMobile({
 
         {/* Semi Finals Section */}
         {semiFinals.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 relative">
+            <div ref={semiFinalRef} className='absolute bottom-[calc(100%+6em)]'></div>
             <h3 className="text-gray-400 text-sm font-medium ml-2">Semi Finals</h3>
             <div className="grid grid-cols-1 gap-3">
               {semiFinals.map((match) => (
@@ -111,7 +128,8 @@ export default function BracketMobile({
 
         {/* Final Section */}
         {final && (
-          <div className="space-y-3">
+          <div className="space-y-3 relative">
+            <div ref={finalRef} className='absolute bottom-[calc(100%+6em)]'></div>
             <h3 className="text-gray-400 text-sm font-medium ml-2">Final</h3>
             <AnimatePresence>
               <motion.div

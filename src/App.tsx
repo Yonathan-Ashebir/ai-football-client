@@ -9,7 +9,7 @@ import Datasets from './pages/Datasets';
 import Models from './pages/Models';
 import Tournament from './pages/Tournament';
 import UpcomingMatches from './pages/UpcomingMatches';
-import {Assistant} from "./components/Assistant.tsx";
+import {Assistant} from "./components/assistant/Assistant.tsx";
 
 function App() {
   return (

@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
-import {assistantApi} from "../utils/api.ts";
-import {Message} from "../types";
+import {assistantApi} from "../../utils/api.ts";
+import {Message} from "../../types";
 import FloatingChatBot from "./FloatingChatBot.tsx";
 
 export function Assistant() {

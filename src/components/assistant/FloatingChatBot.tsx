@@ -1,8 +1,8 @@
 import {FormEvent, KeyboardEvent, useEffect, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {AlertCircle, Loader2, MessageCircle, RefreshCw, Send, Sparkles, X} from 'lucide-react';
-import {Message} from '../types';
-import MarkdownRenderer from "./common/MarkdownRenderer.tsx";
+import {Message} from '../../types';
+import MarkdownRenderer from "../common/MarkdownRenderer.tsx";
 
 interface ChatBotProps {
   messages: Message[];
