@@ -37,7 +37,7 @@ function Chip({ content, maxLength = 12 }: { content: string; maxLength?: number
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0
-            group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-20"
+            group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-10"
         >
           <div className="bg-gray-900/95 backdrop-blur-sm text-white text-[11px] px-2 py-1
             rounded-lg shadow-lg whitespace-nowrap border border-white/10">
@@ -153,7 +153,7 @@ export default function KeyValueDisplay({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full mb-2 w-72 opacity-0
-              group-hover/preview:opacity-100 transition-all duration-200 pointer-events-none z-50"
+              group-hover/preview:opacity-100 transition-all duration-200 pointer-events-none z-10"
           >
             <div className="bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-xl p-3 space-y-2
               border border-white/10">

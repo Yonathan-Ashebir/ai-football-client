@@ -77,7 +77,7 @@ export default function FloatingChatBot({
             initial={{opacity: 0, scale: 0.8, y: 60}}
             animate={{opacity: 1, scale: 1, y: 0}}
             exit={{opacity: 0, scale: 0.8, y: 60}}
-            className="fixed inset-0 pt-16 w-full h-full sm:absolute sm:inset-auto sm:pt-0 sm:bottom-16 sm:right-0 sm:w-96 sm:h-[600px] sm:max-h-[calc(100vh-12rem)]
+            className="fixed bottom-0 left-0 w-full h-[calc(100vh-4em)] sm:absolute sm:inset-auto sm:bottom-16 sm:right-0 sm:w-96 sm:h-[600px] sm:max-h-[calc(100vh-12rem)]
                      z-50 bg-gradient-to-b from-white to-primary-50
                      sm:rounded-2xl shadow-2xl overflow-hidden
                      flex flex-col"

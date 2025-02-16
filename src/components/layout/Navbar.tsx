@@ -31,7 +31,7 @@ export default function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       !isScrolled
         ? 'bg-white shadow-md'
         : 'bg-white/80 backdrop-blur-md border-b border-primary-100/50 shadow-sm'

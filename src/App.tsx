@@ -33,7 +33,7 @@ function App() {
           </main>
           <Footer/>
         </div>
-        <div className="flex flex-col fixed bottom-6 right-6 items-center">
+        <div className="flex flex-col fixed bottom-6 right-6 items-center z-50">
           <Assistant/>
           <ScrollToTop/>
         </div>

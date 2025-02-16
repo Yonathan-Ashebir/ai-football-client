@@ -108,7 +108,7 @@ export default function ModelsSelector({
                       initial={{opacity: 0, y: 5}}
                       animate={{opacity: 1, y: 0}}
                       exit={{opacity: 0, y: 5}}
-                      className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2
+                      className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2
                                bg-gray-900 text-white text-xs rounded-lg shadow-xl hidden sm:block"
                     >
                       {type.description}

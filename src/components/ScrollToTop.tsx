@@ -31,7 +31,7 @@ export default function ScrollToTop() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={scrollToTop}
-          className="z-40 p-4 rounded-xl bg-gradient-to-r from-primary-600 to-primary-400
+          className="z-10 p-4 rounded-xl bg-gradient-to-r from-primary-600 to-primary-400
             text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-shadow"
         >
           <ArrowUp className="w-5 h-5" />

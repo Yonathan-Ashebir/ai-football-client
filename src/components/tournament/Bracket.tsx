@@ -93,7 +93,7 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
 
         {/* Final */}
         {final && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-72 z-40">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-72 z-10">
             <AnimatePresence>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

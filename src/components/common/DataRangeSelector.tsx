@@ -110,59 +110,6 @@ export function DateRangeSelector({
         new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) > minDate && setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
     };
 
-  return (
-    <div className="relative">
-      <div
-        className="inline-flex items-center gap-4 bg-white p-2 rounded-lg shadow-md cursor-pointer"
-        onClick={() => {
-          if (isOpen) {
-            setIsOpen(false);
-            setActiveSelector(null)
-          } else {
-            setIsOpen(true);
-            setActiveSelector('start');
-          }
-        }}
-      >
-        {/* <Calendar className="w-5 h-5 text-primary-600" />*/}
-        <div className="flex items-center gap-2">
-          <div className={`px-3 py-1 rounded-md ${activeSelector === 'start' ? 'bg-primary-100' : ''}`}>
-            {formatDate(startDate)}
-          </div>
-          <span className="text-gray-400">→</span>
-          <div className={`px-3 py-1 rounded-md ${activeSelector === 'end' ? 'bg-primary-100' : ''}`}>
-            {formatDate(endDate)}
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{opacity: 0, y: 10}}
-            animate={{opacity: 1, y: 0}}
-            exit={{opacity: 0, y: 10}}
-            className="absolute top-full mt-2 bg-white rounded-lg shadow-xl p-4 z-50"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={prevMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate ? 'opacity-20' : 'hover:bg-primary-100'}`}
-                disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1) <= minDate}
-              >
-                <ChevronLeft className="w-5 h-5 text-primary-600"/>
-              </button>
-              <h3 className="text-lg font-semibold text-gray-800">
-                {currentMonth.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}
-              </h3>
-              <button
-                onClick={nextMonth}
-                className={`p-1 rounded-full transition-colors ${new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1) >= maxDate ? 'opacity-20' : 'hover:bg-primary-100'}`}
-                disabled={new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0) >= maxDate}
-              >
-                <ChevronRight className="w-5 h-5 text-primary-600"/>
-              </button>
-            </div>
     return (
         <div className="relative"
              onMouseEnter={() => setIsOpen(true)}
@@ -192,6 +139,7 @@ export function DateRangeSelector({
                         initial={{opacity: 0, y: 10}}
                         animate={{opacity: 1, y: 0}}
                         exit={{opacity: 0, y: 10}}
+                        className="absolute top-full bg-white rounded-lg shadow-xl p-4 z-50"
                     >
                         <div className="flex items-center justify-between mb-4">
                             <button
