@@ -13,6 +13,7 @@ import {modelsApi} from "../utils/api.ts";
 import ErrorDisplay from "../components/common/ErrorDisplay.tsx";
 import SingleModelSelector from "../components/common/SingleModelSelector.tsx";
 import BracketMobile from "../components/tournament/BrackerMobile.tsx";
+import Bracket from "../components/tournament/Bracket.tsx";
 
 export default function Tournament() {
   const [selectedTeams, setSelectedTeams] = useState<TournamentTeam[]>([]);
@@ -180,15 +181,15 @@ export default function Tournament() {
             teams={selectedTeams}
           />
           <BracketMobile
-            className={'md:hidden'}
+            className={'lg:hidden'}
             matches={matches}
             onMatchClick={handleMatchClick}
             proceedToNextRound={() => proceedToNextRound(selectedModel!, matchHistory)}
             currentRound={currentRound}
             progress={progress}
           />
-          <BracketMobile
-            className={'hidden md:block'}
+          <Bracket
+            className={'hidden lg:block'}
             matches={matches}
             onMatchClick={handleMatchClick}
             proceedToNextRound={() => proceedToNextRound(selectedModel!, matchHistory)}
