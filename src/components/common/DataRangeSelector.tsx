@@ -139,7 +139,7 @@ export function DateRangeSelector({
                         initial={{opacity: 0, y: 10}}
                         animate={{opacity: 1, y: 0}}
                         exit={{opacity: 0, y: 10}}
-                        className="absolute top-full bg-white rounded-lg shadow-xl p-4 z-50"
+                        className="absolute top-full bg-white rounded-lg shadow-xl p-4 z-40"
                     >
                         <div className="flex items-center justify-between mb-4">
                             <button

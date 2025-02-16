@@ -1,6 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
 import {Loader2, Trophy} from 'lucide-react';
-import Bracket from '../components/tournament/Bracket';
 import TeamSelector from '../components/tournament/TeamSelector';
 import TournamentSettings from '../components/tournament/TournamentSettings';
 import VictoryAnimation from '../components/tournament/VictoryAnimation';
@@ -13,6 +12,7 @@ import TeamFailedAnimation from "../components/tournament/TeamFailedAnimation.ts
 import {modelsApi} from "../utils/api.ts";
 import ErrorDisplay from "../components/common/ErrorDisplay.tsx";
 import SingleModelSelector from "../components/common/SingleModelSelector.tsx";
+import BracketMobile from "../components/tournament/BrackerMobile.tsx";
 
 export default function Tournament() {
   const [selectedTeams, setSelectedTeams] = useState<TournamentTeam[]>([]);
@@ -179,7 +179,16 @@ export default function Tournament() {
             favoriteTeam={favoriteTeam}
             teams={selectedTeams}
           />
-          <Bracket
+          <BracketMobile
+            className={'md:hidden'}
+            matches={matches}
+            onMatchClick={handleMatchClick}
+            proceedToNextRound={() => proceedToNextRound(selectedModel!, matchHistory)}
+            currentRound={currentRound}
+            progress={progress}
+          />
+          <BracketMobile
+            className={'hidden md:block'}
             matches={matches}
             onMatchClick={handleMatchClick}
             proceedToNextRound={() => proceedToNextRound(selectedModel!, matchHistory)}

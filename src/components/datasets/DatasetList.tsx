@@ -6,6 +6,7 @@ import {datasetsApi} from "../../utils/api.ts";
 import DatasetCard from './DatasetCard.tsx';
 import DatasetCardSkeleton from "./DatasetCardSkeleton.tsx";
 import {GeneralModal} from "../common/GeneralModal.tsx";
+import {HighlightText} from "../common/HighlightText.tsx";
 
 interface Props {
     datasets: Dataset[];
@@ -81,7 +82,7 @@ export default function DatasetList({datasets, onDelete, isLoading, searchQuery}
                     icon: Trash2Icon,
                     className: 'bg-red-600 text-white hover:bg-red-700',
                 },]} title={"Confirmation"}> Are you sure you want to
-              delete {confirmDeletionDataset.name}</GeneralModal>}
+              delete <HighlightText variant={'danger'}>{confirmDeletionDataset.name}</HighlightText>?</GeneralModal>}
         </div>
     );
 }

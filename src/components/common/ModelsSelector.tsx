@@ -30,7 +30,6 @@ export default function ModelsSelector({
   const [activeTab, setActiveTab] = useState(modelTypes[0]?.id);
   const [searchQuery, setSearchQuery] = useState('');
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const filteredModels = models.filter(
     model =>
@@ -53,16 +52,8 @@ export default function ModelsSelector({
             <h2 className="text-lg font-semibold text-white">Select Models</h2>
           </div>
 
-          {/* Mobile Search Toggle */}
-          <button
-            onClick={() => setIsSearchVisible(!isSearchVisible)}
-            className="sm:hidden bg-white/10 p-2 rounded-lg text-white"
-          >
-            <Search className="w-5 h-5"/>
-          </button>
-
           {/* Search Input */}
-          <div className={`relative ${isSearchVisible ? 'block' : 'hidden'} sm:block`}>
+          <div className={`relative sm:block`}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-300 w-4 h-4"/>
             <input
               type="text"

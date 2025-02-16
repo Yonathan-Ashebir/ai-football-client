@@ -5,7 +5,7 @@ import MatchCard from './MatchCard';
 import {ArrowRight, Loader2, RefreshCw} from "lucide-react";
 import TournamentTimeline from "./TournamentTimeline.tsx";
 
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   matches: MatchPrediction[];
   onMatchClick: (match: MatchPrediction) => void;
   proceedToNextRound: () => Promise<void>;
@@ -19,7 +19,7 @@ const roundLabels = {
   final: 'Results'
 };
 
-export default function Bracket({ matches, onMatchClick, proceedToNextRound, currentRound, progress }: Props) {
+export default function Bracket({ matches, onMatchClick, proceedToNextRound, currentRound, progress,className,  ...rest }: Props) {
   const quarterFinals = matches.filter(m => m.round === 'quarterfinal');
   const semiFinals = matches.filter(m => m.round === 'semifinal');
   const final = matches.find(m => m.round === 'final');
@@ -43,7 +43,7 @@ export default function Bracket({ matches, onMatchClick, proceedToNextRound, cur
   };
 
   return (
-    <div className="relative min-h-[800px] flex flex-col justify-between bg-gray-900 rounded-3xl p-8 pb-8 overflow-hidden">
+    <div className={"relative min-h-[800px] flex flex-col justify-between bg-gray-900 rounded-3xl p-8 pb-8 overflow-hidden "+ className} {...rest}>
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600">
           Tournament Bracket
