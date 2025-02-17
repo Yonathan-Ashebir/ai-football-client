@@ -9,6 +9,7 @@ export interface Feature {
   prefix?: string;
   suffix?: string;
   isInteger?: boolean;
+  score?: number;
 }
 
 export interface PlayerPositionPrediction {
@@ -39,5 +40,10 @@ export type Message = {
   role: MessageRole;
   content: string;
   error?: string;
+}
+
+export interface Layer {
+  size: number;
+  activation: 'ReLU' | 'Sigmoid' | 'Tanh' | 'Linear';
 }
 

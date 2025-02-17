@@ -9,6 +9,11 @@ import {datasetsApi} from "../../utils/api.ts";
 import ErrorDisplay from "../common/ErrorDisplay.tsx";
 import {useManaged} from "../../hooks/useManaged.ts";
 import {ModelType} from "../../types/model.ts";
+import {Layer} from "../../types";
+import ANNParams from "./ANNParams.tsx";
+import RandomForestParams from "./RandomForestParams.tsx";
+import {motion} from 'framer-motion';
+import XGBoostParams from "./XGBoostParams.tsx";
 
 interface Props {
   onTrain: (config: TrainingConfig) => Promise<void>;
@@ -22,6 +27,13 @@ interface TrainingConfig {
   columns: string[];
   name: string;
 }
+
+const MathPredictionModelTypes = {ANN: "ANN", RANDOM_FOREST: "Random Forest", XG_BOOST: "XgBoost"} as const
+type MathPredictionModelType = typeof MathPredictionModelTypes[keyof typeof MathPredictionModelTypes]
+
+const PlayerPositionModelTypes = {ANN: "ANN", RANDOM_FOREST: "Random Forest"} as const
+type PlayerPositionModelType = typeof PlayerPositionModelTypes[keyof typeof PlayerPositionModelTypes]
+
 
 const getCorrespondingModelType = (t: 'match-prediction' | 'player-position'): ModelType => {
   switch (t) {
@@ -43,8 +55,9 @@ const getDatasetTypesForModelType = (modelType: string): string[] => {
   }
 }
 
+
 export default function ModelTraining({onTrain}: Props) {
-  const [step, setStep] = useState<'dataset' | 'name' | 'columns'>('dataset');
+  const [step, setStep] = useState<'dataset' | 'name' | 'configure'>('dataset');
   const [trainingType, setTrainingType] = useState<TrainingType>('match-prediction');
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [modelName, setModelName] = useState('');
@@ -52,6 +65,23 @@ export default function ModelTraining({onTrain}: Props) {
 
   const [traingingStartError, setTraingingStartError] = useState<string | null>(null);
   const [isStartingTraining, setIsStartingTraining] = useState<boolean>(false);
+
+  const [modelType, setModelType] = useState<MathPredictionModelType | PlayerPositionModelType>(MathPredictionModelTypes.ANN)
+  const [layers, setLayers] = useState<Layer[]>([]);
+  const [epochs, setEpochs] = useState<number>(10);
+  const [learningRate, setLearningRate] = useState<number>(0.01);
+
+  const [numTrees, setNumTrees] = useState(100);
+  const [maxDepth, setMaxDepth] = useState(10);
+  const [minSamplesSplit, setMinSamplesSplit] = useState(2);
+  const [minSamplesLeaf, setMinSamplesLeaf] = useState(1);
+
+  const [xgbNumTrees, setXgbNumTrees] = useState(100);
+  const [xgbMaxDepth, setXgbMaxDepth] = useState(6);
+  const [xgbLearningRate, setXgbLearningRate] = useState(0.1);
+  const [xgbMinChildWeight, setXgbMinChildWeight] = useState(1);
+  const [xgbSubsample, setXgbSubsample] = useState(1);
+  const [xgbColsampleByTree, setXgbColsampleByTree] = useState(1);
 
   const {
     resource: datasets,
@@ -72,7 +102,7 @@ export default function ModelTraining({onTrain}: Props) {
         setStep('dataset');
         setSelectedDataset(null);
         break;
-      case 'columns':
+      case 'configure':
         setStep('name');
         setSelectedColumns([]);
         break;
@@ -92,7 +122,7 @@ export default function ModelTraining({onTrain}: Props) {
 
   const handleNameSubmit = () => {
     if (modelName.trim()) {
-      setStep('columns');
+      setStep('configure');
     }
   };
 
@@ -184,7 +214,8 @@ export default function ModelTraining({onTrain}: Props) {
           </div>
         )}
 
-        {step === 'columns' && (
+
+        {step === 'configure' && (
           <ColumnSelector
             columns={columns!}
             selectedColumns={selectedColumns}
@@ -194,7 +225,94 @@ export default function ModelTraining({onTrain}: Props) {
           />
         )}
 
-        {step === 'columns' && (
+
+        {step === 'configure' && <div className="flex flex-wrap gap-3">
+          {Object.values(trainingType === 'match-prediction' ? MathPredictionModelTypes : PlayerPositionModelTypes).map((m) => (
+            <motion.button
+              key={m}
+              onClick={() => setModelType(m)}
+              className={`
+        relative px-4 py-2 rounded-lg font-medium
+        transition-all duration-200
+        ${m === modelType
+                ? 'text-primary-900 shadow-lg shadow-primary-100'
+                : 'text-gray-600 hover:text-gray-900'
+              }
+      `}
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
+            >
+              {/* Background with gradient and hover effect */}
+              <div
+                className={`
+          absolute inset-0 rounded-lg transition-all duration-200
+          ${m === modelType
+                  ? 'bg-gradient-to-r from-primary-100 to-primary-50 opacity-100'
+                  : 'bg-gray-100 opacity-0 hover:opacity-100'
+                }
+        `}
+              />
+
+              {/* Content with icon */}
+              <div className="relative flex items-center gap-2">
+                {m === modelType ? (
+                  <motion.div
+                    initial={{scale: 0}}
+                    animate={{scale: 1}}
+                    className="w-2 h-2 rounded-full bg-primary-500"
+                  />
+                ) : (
+                  <div className="w-2 h-2 rounded-full bg-transparent"/>
+                )}
+                <span>{m}</span>
+              </div>
+
+              {/* Active indicator dot */}
+              {m === modelType && (
+                <motion.div
+                  layoutId="activeIndicator"
+                  className="absolute -right-1 -top-1 w-3 h-3 bg-primary-500 rounded-full"
+                  transition={{type: "spring", stiffness: 300, damping: 30}}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+        }
+
+        {step === 'configure' && modelType == MathPredictionModelTypes.ANN && (
+          <ANNParams epochs={epochs} onEpochsChange={setEpochs} learningRate={learningRate}
+                     onLearningRateChange={setLearningRate} layers={layers} onLayersChange={setLayers}
+          />
+        )}
+
+        {step === 'configure' && modelType == MathPredictionModelTypes.RANDOM_FOREST && (
+          <RandomForestParams maxDepth={maxDepth} onMaxDepthChange={setMaxDepth} minSamplesLeaf={minSamplesLeaf}
+                              onMinSamplesLeafChange={setMinSamplesLeaf} numTrees={numTrees}
+                              onNumTreesChange={setNumTrees} minSamplesSplit={minSamplesSplit}
+                              onMinSamplesSplitChange={setMinSamplesSplit}
+          />
+        )}
+
+        {step === 'configure' && modelType == MathPredictionModelTypes.XG_BOOST && (
+          <XGBoostParams
+            numTrees={xgbNumTrees}
+            maxDepth={xgbMaxDepth}
+            learningRate={xgbLearningRate}
+            minChildWeight={xgbMinChildWeight}
+            subsample={xgbSubsample}
+            colsampleByTree={xgbColsampleByTree}
+            onNumTreesChange={setXgbNumTrees}
+            onMaxDepthChange={setXgbMaxDepth}
+            onLearningRateChange={setXgbLearningRate}
+            onMinChildWeightChange={setXgbMinChildWeight}
+            onSubsampleChange={setXgbSubsample}
+            onColsampleByTreeChange={setXgbColsampleByTree}
+          />
+        )}
+
+
+        {step === 'configure' && (
           !isStartingTraining ? (
             <>
               <button
