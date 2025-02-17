@@ -8,6 +8,7 @@ import {Feature, PlayerPositionPrediction, positions} from "../../types";
 import SingleModelSelector from "../common/SingleModelSelector.tsx";
 import {roundToNearest} from "../../utils";
 import {PlayerFeatures} from "./PlayerFeatures.tsx";
+import {FeatureAnalysis} from "./FeatureAnalytics.tsx";
 
 export default function PlayerStats() {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,8 @@ export default function PlayerStats() {
     enabled: boolean
   }>>({});
   const [allNecessaryFeaturesSelected, setAllNecessaryFeaturesSelected] = useState(false);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
 
   const {
@@ -73,7 +76,9 @@ export default function PlayerStats() {
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
 
           <PlayerFeatures setSelectedFeatures={setAdjustedFeatures} selectedFeatures={adjustedFeatures}
-                          selectedModel={selectedModel} setAllNecessaryFeaturesSelected={setAllNecessaryFeaturesSelected}/>
+                          selectedModel={selectedModel}
+                          setAllNecessaryFeaturesSelected={setAllNecessaryFeaturesSelected}
+                          setAllFeatures={setAllFeatures}/>
 
           <button
             type="submit"
@@ -128,6 +133,21 @@ export default function PlayerStats() {
           </div>
         </div>
       )}
+      {/*{allFeatures.map((num) => (*/}
+      {/*  <button*/}
+      {/*    onClick={() => setSelectedFeature(num)}*/}
+      {/*    className={`px-2 py-1 rounded ${*/}
+      {/*      selectedFeature === num*/}
+      {/*        ? 'bg-primary-100 text-primary-700'*/}
+      {/*        : 'hover:bg-gray-200'*/}
+      {/*    }`}*/}
+      {/*  >*/}
+      {/*    {num.name}*/}
+      {/*  </button>*/}
+      {/*))}*/}
+      {/*{position && selectedFeature && (*/}
+      {/*  <FeatureAnalysis feature={selectedFeature} allFeatures={allFeatures}/>*/}
+      {/*)}*/}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import {useState, useMemo} from 'react';
 import {Feature} from "../../types";
 import {Model} from "../../types/model.ts";
 import {useResource} from "../../hooks/useResource.ts";
@@ -12,11 +12,18 @@ import {FeatureController} from "./FeatureController.tsx";
 
 const MAX_PLAYER_MEASUREMENT_SIZE = 10 * 1024
 
-export const PlayerFeatures = ({selectedModel, selectedFeatures, setSelectedFeatures, setAllNecessaryFeaturesSelected}: {
+export const PlayerFeatures = ({
+                                 selectedModel,
+                                 selectedFeatures,
+                                 setSelectedFeatures,
+                                 setAllNecessaryFeaturesSelected,
+                                 setAllFeatures
+                               }: {
   selectedModel: Model,
   selectedFeatures: Record<Feature['id'], { value: number, enabled: boolean }>,
   setSelectedFeatures: (updatedFeatures: Record<Feature['id'], { value: number, enabled: boolean }>) => void,
-  setAllNecessaryFeaturesSelected: (ready: boolean) => void
+  setAllNecessaryFeaturesSelected: (ready: boolean) => void,
+  setAllFeatures: (features: Feature[]) => void
 }) => {
   const {
     resource: features,
@@ -26,6 +33,10 @@ export const PlayerFeatures = ({selectedModel, selectedFeatures, setSelectedFeat
   } = useResource<Feature[]>(() => playerStatisticsApi.getAdjustableFeatures(selectedModel!.id), [selectedModel], {
     initialValue: [],
   })
+
+  useEffect(() => {
+    setAllFeatures(features)
+  }, [features])
 
   // New state for search and filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -143,11 +154,11 @@ export const PlayerFeatures = ({selectedModel, selectedFeatures, setSelectedFeat
   }
 
   const limitOptions = [
-    { value: 10, label: '10 features' },
-    { value: 25, label: '25 features' },
-    { value: 50, label: '50 features' },
-    { value: 100, label: '100 features' },
-    { value: 1000, label: 'All features' },
+    {value: 10, label: '10 features'},
+    {value: 25, label: '25 features'},
+    {value: 50, label: '50 features'},
+    {value: 100, label: '100 features'},
+    {value: 1000, label: 'All features'},
   ];
 
   return isLoadingFeatures ? (
@@ -214,12 +225,13 @@ export const PlayerFeatures = ({selectedModel, selectedFeatures, setSelectedFeat
                       />
                       <div
                         className="absolute -top-8 transform -translate-x-1/2 transition-all duration-200"
-                        style={{ left: `${scoreThreshold}%` }}
+                        style={{left: `${scoreThreshold}%`}}
                       >
                         <span className="bg-primary-500 text-white px-2 py-1 rounded text-sm">
                           {scoreThreshold}
                         </span>
-                        <div className="w-2 h-2 bg-primary-500 rotate-45 absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
+                        <div
+                          className="w-2 h-2 bg-primary-500 rotate-45 absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
                       </div>
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -239,7 +251,8 @@ export const PlayerFeatures = ({selectedModel, selectedFeatures, setSelectedFeat
                     >
                       <div className="flex items-center justify-between">
                         <span>{limitOptions.find(opt => opt.value === limit)?.label}</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isSelectOpen ? 'transform rotate-180' : ''}`} />
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200 ${isSelectOpen ? 'transform rotate-180' : ''}`}/>
                       </div>
                     </button>
                     {isSelectOpen && (
