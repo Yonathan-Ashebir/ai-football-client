@@ -1,6 +1,7 @@
 import {motion} from 'framer-motion';
 import {Trophy, X} from 'lucide-react';
 import type {TournamentTeam} from '../../types/tournament';
+import {roundGoals} from "../../utils";
 
 interface Props {
   winner: TournamentTeam;
@@ -45,7 +46,7 @@ export default function VictoryAnimation({winner, onClose}: Props) {
         </p>
 
         <div className="text-gray-600 mb-6">
-          <p>Goals Scored: {winner.stats!.goalsScored!.toFixed(1)}</p>
+          <p>Goals Scored: {roundGoals(winner.stats!.goalsScored)}</p>
           {winner.stats?.winProbability && <p>Win Rate: {Math.round(winner.stats.winProbability * 100)}%</p>}
         </div>
 

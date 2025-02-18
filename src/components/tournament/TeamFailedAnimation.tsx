@@ -1,6 +1,7 @@
 import {motion} from 'framer-motion';
 import {Heart, Trophy, X} from 'lucide-react';
 import type {MatchPrediction, TournamentTeam} from '../../types/tournament';
+import {roundGoals} from "../../utils";
 
 interface Props {
   favoriteTeam: TournamentTeam;
@@ -106,7 +107,7 @@ export default function TeamFailedAnimation({
                 animate={{scale: 1}}
                 transition={{delay: 0.6, type: "spring"}}
               >
-                {favoriteTeam.stats?.goalsScored?.toFixed(1) ?? 0} - {winningTeam.stats?.goalsScored?.toFixed(1) ?? 0}
+                {roundGoals(favoriteTeam.stats?.goalsScored)} - {roundGoals(winningTeam.stats?.goalsScored)}
               </motion.div>
               <motion.img
                 src={winningTeam.logoUrl}

@@ -1,6 +1,7 @@
 import {motion} from 'framer-motion';
 import {Trophy} from 'lucide-react';
 import type {TournamentTeam} from '../../types/tournament';
+import {roundGoals} from "../../utils";
 
 interface Props {
   homeTeam: TournamentTeam;
@@ -29,13 +30,13 @@ export default function MatchResult({ homeTeam, awayTeam, homeGoals, awayGoals, 
           <div className="text-center flex-1">
             <img src={homeTeam.logoUrl} alt={homeTeam.name} className="w-16 h-16 mx-auto mb-2" />
             <div className="font-semibold">{homeTeam.name}</div>
-            <div className="text-3xl font-bold text-gray-900">{homeGoals.toFixed(1)}</div>
+            <div className="text-3xl font-bold text-gray-900">{roundGoals(homeGoals)}</div>
           </div>
           <div className="text-xl font-bold text-gray-400 px-4">vs</div>
           <div className="text-center flex-1">
             <img src={awayTeam.logoUrl} alt={awayTeam.name} className="w-16 h-16 mx-auto mb-2" />
             <div className="font-semibold">{awayTeam.name}</div>
-            <div className="text-3xl font-bold text-gray-900">{awayGoals.toFixed(1)}</div>
+            <div className="text-3xl font-bold text-gray-900">{roundGoals(awayGoals)}</div>
           </div>
         </div>
 

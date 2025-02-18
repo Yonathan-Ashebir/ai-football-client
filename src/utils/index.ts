@@ -34,6 +34,10 @@ export function getRandomElements(array: any, n: number) {
   return result;
 }
 
+export function roundGoals(goals: number | undefined) {
+  return goals === undefined? 0: Math.round(goals);
+}
+
 export function replaceUnderscoreAndHyphen(str: string) {
   return str.replace(/[_-]/g, " ");
 }

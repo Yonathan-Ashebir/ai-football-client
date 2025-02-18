@@ -1,5 +1,6 @@
 import {Trophy} from 'lucide-react';
 import type {MatchPrediction} from '../../types/tournament';
+import {roundGoals} from "../../utils";
 
 interface Props {
   match: MatchPrediction;
@@ -51,7 +52,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
             />
           </div>
           <span className="flex-1 font-medium">{match.homeTeam.name}</span>
-          {!isCurrentRound && <span className="text-xl font-bold">{match.homeTeam.stats?.goalsScored?.toFixed(1)}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{roundGoals(match.homeTeam.stats?.goalsScored)}</span>}
         </div>
 
         <div className={getTeamClasses(false)}>
@@ -63,7 +64,7 @@ export default function MatchCard({match, isCurrentRound, isFinal, onClick}: Pro
             />
           </div>
           <span className="flex-1 font-medium">{match.awayTeam.name}</span>
-          {!isCurrentRound && <span className="text-xl font-bold">{match.awayTeam.stats?.goalsScored?.toFixed(1)}</span>}
+          {!isCurrentRound && <span className="text-xl font-bold">{roundGoals(match.awayTeam.stats?.goalsScored)}</span>}
         </div>
       </div>
     </div>
