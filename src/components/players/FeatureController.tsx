@@ -8,23 +8,31 @@ interface FeatureContollerProps {
   selectedFeatures: Record<string, { enabled: boolean; value: number }>;
   toggleFeature: (feature: Feature) => void;
   updateFeature: (feature: Feature, value: number) => void;
-  getToProgress: (feature: Feature) => (value: number) => number;
-  getToValue: (feature: Feature) => (progress: number) => number;
 }
+
+const getToProgress = (feature: Feature) => {
+  const minimum = feature.minimum ?? 0
+  const maximum = feature.maximum ?? 100
+  return (value: number) => (value - minimum) * 100 / (maximum - minimum)
+}
+
+const getToValue = (feature: Feature) => {
+  const minimum = feature.minimum ?? 0
+  const maximum = feature.maximum ?? 100
+  return (progress: number) => minimum + (maximum - minimum) * progress / 100
+}
+
 
 export function FeatureController({
                                     feature,
                                     selectedFeatures,
                                     toggleFeature,
                                     updateFeature,
-                                    getToProgress,
-                                    getToValue
                                   }: FeatureContollerProps) {
   const isEnabled = selectedFeatures[feature.id]?.enabled;
-  const currentValue = selectedFeatures[feature.id]?.value;
+  const currentValue = selectedFeatures[feature.id]?.value ?? feature.default ?? 0;
 
   const getProgressPercentage = () => {
-    if (!currentValue) return feature.default ?? 0;
     return getToProgress(feature)(currentValue);
   };
 

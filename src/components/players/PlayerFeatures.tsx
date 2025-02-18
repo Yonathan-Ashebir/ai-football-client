@@ -129,7 +129,7 @@ export const PlayerFeatures = ({
     }
   }, [selectedModel])
 
-  const getFeatureDefault = (feature: Feature) => (feature.minimum !== undefined && feature.maximum !== undefined) ? (feature.minimum + feature.maximum) / 2 : feature.minimum !== undefined ? feature.minimum : feature.maximum !== undefined ? feature.maximum : 0
+  const getFeatureDefault = (feature: Feature) =>  feature.default ?? ((feature.minimum !== undefined && feature.maximum !== undefined) ? (feature.minimum + feature.maximum) / 2 : feature.minimum !== undefined ? feature.minimum : feature.maximum !== undefined ? feature.maximum : 0)
 
   useEffect(() => {
       if (features.some(feature => selectedFeatures[feature.id] === undefined)) {
@@ -140,18 +140,6 @@ export const PlayerFeatures = ({
       }
     }, [features, selectedFeatures]
   )
-
-  const getToProgress = (feature: Feature) => {
-    const minimum = feature.minimum ?? 0
-    const maximum = feature.maximum ?? 100
-    return (value: number) => (value - minimum) * 100 / (maximum - minimum)
-  }
-
-  const getToValue = (feature: Feature) => {
-    const minimum = feature.minimum ?? 0
-    const maximum = feature.maximum ?? 100
-    return (progress: number) => minimum + (maximum - minimum) * progress / 100
-  }
 
   const limitOptions = [
     {value: 10, label: '10 features'},
@@ -301,8 +289,6 @@ export const PlayerFeatures = ({
                 selectedFeatures={selectedFeatures}
                 toggleFeature={toggleFeature}
                 updateFeature={updateFeature}
-                getToProgress={getToProgress}
-                getToValue={getToValue}
               />
             ))}
           </div>
