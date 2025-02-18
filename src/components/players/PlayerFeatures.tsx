@@ -41,7 +41,7 @@ export const PlayerFeatures = ({
   // New state for search and filters
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreThreshold, setScoreThreshold] = useState(0);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 

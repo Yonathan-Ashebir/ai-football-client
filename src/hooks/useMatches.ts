@@ -45,7 +45,7 @@ export function useMatches() {
       const models = (await modelsApi.list(['match_winner_with_scaler'])).filter(m => m.status === ModelStatus.READY)
 
       if (models.length === 0) { // TODO: may be add a model selection option for the user, filtering/auto filtered by leagues ..., make it a server side thing (aliasing per model, per user, or globally ...)?
-        throw new Error("No suitable match prediction models found")
+        throw new Error("No sufficient data to predict the match")
       }
 
       const requiredTeamNames = [[match.homeTeam.shortName, match.homeTeam.name], [match.awayTeam.shortName, match.awayTeam.name]]

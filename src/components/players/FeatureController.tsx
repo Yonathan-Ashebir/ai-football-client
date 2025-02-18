@@ -1,6 +1,7 @@
 import {Feature} from "../../types";
 import {AnimatePresence, motion} from "framer-motion";
 import {Check, Info, Lock} from "lucide-react";
+import {getReadableFeatureName} from "../../data/constants.ts";
 
 interface FeatureContollerProps {
   feature: Feature;
@@ -26,6 +27,9 @@ export function FeatureController({
     if (!currentValue) return 0;
     return getToProgress(feature)(currentValue);
   };
+
+  // Get the readable feature name
+  const readableFeatureName = getReadableFeatureName(feature.name);
 
   return (
     <div className="relative group">
@@ -70,7 +74,7 @@ export function FeatureController({
                 <span className={`font-medium transition-colors ${
                   isEnabled ? 'text-primary' : 'text-gray-700'
                 }`}>
-                  {feature.name}
+                  {readableFeatureName}
                 </span>
                 {feature.optional && (
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-100 text-primary-700 font-medium">
@@ -175,7 +179,7 @@ export function FeatureController({
             whileHover={{opacity: 1, y: 0}}
             className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg pointer-events-none"
           >
-            Adjust {feature.name.toLowerCase()} within the range
+            Adjust {readableFeatureName.toLowerCase()} within the range
             of {feature.minimum || 0}{feature.suffix} to {feature.maximum || 100}{feature.suffix}
             <div className="absolute bottom-0 right-4 -mb-1 w-2 h-2 bg-gray-900 transform rotate-45"/>
           </motion.div>

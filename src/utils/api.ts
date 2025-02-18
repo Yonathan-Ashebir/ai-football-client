@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Model, ModelType} from "../types/model.ts";
-import {Feature, Message, PairwiseStatistic, PlayerPositionPrediction} from "../types";
+import {Feature, Message, PairwiseStatistic, PlayerPositionPrediction, TrainingConfig} from "../types";
 import {TournamentTeam} from "../types/tournament.ts";
 import {Dataset} from "../types/dataset.ts";
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from "../types/matches.ts";
@@ -94,13 +94,7 @@ export const datasetsApi = {
 
 // Models
 export const modelsApi = {
-  create: ({modelType, ...rest}: {
-    datasets: string[];
-    modelType: ModelType;
-    columns: string[];
-    name: string;
-    parameters?: Record<string, any>;
-  }): Promise<Model> => api.post('/models/create_one', {model_type: modelType, ...rest}).then(resp => resp.data['model']),
+  create: ({modelType, ...rest}: TrainingConfig): Promise<Model> => api.post('/models/create_one', {model_type: modelType, ...rest}).then(resp => resp.data['model']),
 
   /**
    * Fetch the list of models for the current user.
