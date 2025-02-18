@@ -94,7 +94,10 @@ export const datasetsApi = {
 
 // Models
 export const modelsApi = {
-  create: ({modelType, ...rest}: TrainingConfig): Promise<Model> => api.post('/models/create_one', {model_type: modelType, ...rest}).then(resp => resp.data['model']),
+  create: ({
+             modelType,
+             ...rest
+           }: TrainingConfig): Promise<Model> => api.post('/models/create_one', {model_type: modelType, ...rest}).then(resp => resp.data['model']),
 
   /**
    * Fetch the list of models for the current user.
@@ -149,6 +152,22 @@ const transformMatchesData = (matches: any) => {
   }));
 };
 
+export interface FuzzyPairwiseStatisticsPayload {
+  teams: string[]; // Array of team names (must have an even number of elements)
+  previous_matches_count?: number; // Optional: Number of previous matches to consider
+  no_draw?: boolean; // Optional: Exclude draw probabilities (default: false)
+  fuzzy_match_threshold?: number; // Optional: Fuzzy match threshold (default: 80)
+  required_prediction_types: ModelType[]
+}
+
+export interface FuzzyPairwiseStatisticsResult {
+  team1: string;
+  team2: string;
+  winning_probabilities?: number[]; // Array of probabilities for [team1, draw, team2] or [team1, team2] if no_draw is true
+  expected_goals?: number; // Predicted number of goals
+  both_teams_to_score_probability?: number; // Probability that both teams will score
+}
+
 
 export const knockoutsApi = {
   getPairwiseStatistics: (payload: {
@@ -171,8 +190,23 @@ export const knockoutsApi = {
       }
     })
     return transformMatchesData(response['data'].matches)
+  },
+  getFuzzyPairwiseStatistics: async (
+    payload: FuzzyPairwiseStatisticsPayload
+  ): Promise<FuzzyPairwiseStatisticsResult[]> => {
+    try {
+      const response = await api.post<FuzzyPairwiseStatisticsResult[]>(
+        "/knockouts/get_fuzzy_pairwise_statistics",
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching fuzzy pairwise statistics:", error);
+      throw error;
+    }
   }
 }
+
 export const playerStatisticsApi = {
   getPlayerBestPosition: (payload: {
     measurements: Record<string, number>,
@@ -188,8 +222,9 @@ export const playerStatisticsApi = {
       headers: {'Content-Type': 'multipart/form-data'},
     });
     return resp.data['measurements'];
-  },
+  }
 }
+
 
 export const assistantApi = {
   streamChat: async (messages: Message[], onChunk: (chunk: string) => void, signal?: AbortSignal) => {

@@ -24,7 +24,7 @@ export function FeatureController({
   const currentValue = selectedFeatures[feature.id]?.value;
 
   const getProgressPercentage = () => {
-    if (!currentValue) return 0;
+    if (!currentValue) return feature.default ?? 0;
     return getToProgress(feature)(currentValue);
   };
 

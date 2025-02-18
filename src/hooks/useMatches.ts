@@ -1,8 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {DEFAULT_UPCOMING_MATCH_DAYS_END, Match} from '../types/matches';
-import {knockoutsApi, modelsApi} from "../utils/api.ts";
-import {Model, ModelStatus} from "../types/model.ts";
-import {matchString} from "../utils";
+import {FuzzyPairwiseStatisticsPayload, knockoutsApi} from "../utils/api.ts";
+import {ModelTypes} from "../types/model.ts";
 
 export function useMatches() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -29,7 +28,7 @@ export function useMatches() {
         req = latestRequest.current
         const data = await req
         if (req === request) setMatches(data)
-      } catch (err) {
+      } catch {
         if (req === request) setError('Failed to fetch upcoming matches. Please try again later.');
       } finally {
         if (req === request)
@@ -38,62 +37,49 @@ export function useMatches() {
     } while (latestRequest.current !== req);
   };
 
-  const predictMatch = async (match: Match) => {
+
+  interface PredictionResult {
+    homeWin: number;
+    draw: number;
+    awayWin: number;
+  }
+
+
+  const predictMatch = async (match: Match): Promise<PredictionResult> => {
     setPredictingMatchId(match.id);
     try {
-      // Mock prediction for demo - replace with actual ML model call
-      const models = (await modelsApi.list(['match_winner_with_scaler'])).filter(m => m.status === ModelStatus.READY)
-
-      if (models.length === 0) { // TODO: may be add a model selection option for the user, filtering/auto filtered by leagues ..., make it a server side thing (aliasing per model, per user, or globally ...)?
-        throw new Error("No sufficient data to predict the match")
-      }
-
-      const requiredTeamNames = [[match.homeTeam.shortName, match.homeTeam.name], [match.awayTeam.shortName, match.awayTeam.name]]
-      let bestSimilarityScore = Infinity
-      let bestMatchModel: Model | null = null
-      let bestMatchingTeams: string[] | null = null
-      for (const model of models) {
-        const modelTeams = (await modelsApi.getModelTeams(model.id)).map(t => [t.name, t.id]); // Get teams for the current model
-
-        // Calculate total similarity score between model teams and required team names
-        let totalSimilarityScore = 0;
-        const matchingTeams: string[] = [];
-
-        for (const requiredTeam of requiredTeamNames) {
-          const match = matchString(requiredTeam, modelTeams, 0.4)!
-          if (!match) continue;
-            totalSimilarityScore += match.bestScore
-            matchingTeams.push(match.matchedArray[0]);
-        }
-
-        // Update the best match if this model has a higher total similarity score
-        if (totalSimilarityScore < bestSimilarityScore && matchingTeams.length === requiredTeamNames.length) {
-          bestSimilarityScore = totalSimilarityScore;
-          bestMatchModel = model;
-          bestMatchingTeams = matchingTeams;
-        }
-      }
-
-      if (!bestMatchModel || !bestMatchingTeams) {
-        throw new Error(`No models found for these teams`);
-      }
-
-      console.log(`Predicting for ${bestMatchingTeams[0]} vs ${bestMatchingTeams[1]}`);
-
-      const prediciton = (await knockoutsApi.getPairwiseStatistics({
-        teams: bestMatchingTeams,
-        no_draw: false,
-        previous_matches_count: 2,
-        models: {[bestMatchModel.type]: bestMatchModel.id}
-      }))[0] /* TODO: do not hard code*/
-
-      return {
-        homeWin: prediciton.winning_probabilities![0],
-        draw: prediciton.winning_probabilities![1],
-        awayWin: prediciton.winning_probabilities![2],
+      // Prepare the payload for the fuzzy pairwise statistics API
+      const payload: FuzzyPairwiseStatisticsPayload = {
+        teams: [match.homeTeam.name, match.awayTeam.name], // Use the home and away team names
+        previous_matches_count: 2, // Optional: Number of previous matches to consider
+        no_draw: false, // Include draw probabilities
+        required_prediction_types: [ModelTypes.MATCH_WINNER_WITH_SCALER]
       };
+
+      // Call the fuzzy pairwise statistics API
+      const results = await knockoutsApi.getFuzzyPairwiseStatistics(payload);
+
+      // Extract the prediction for the specific match
+      const prediction = results.find(
+        (result) =>
+          result.team1 === match.homeTeam.name && result.team2 === match.awayTeam.name
+      );
+
+      if (!prediction || !prediction.winning_probabilities) {
+        throw new Error("No prediction found for the match.");
+      }
+
+      // Return the prediction result
+      return {
+        homeWin: prediction.winning_probabilities[0],
+        draw: prediction.winning_probabilities[1],
+        awayWin: prediction.winning_probabilities[2],
+      };
+    } catch (error) {
+      console.error("Error predicting match:", error);
+      throw error; // Re-throw the error for further handling
     } finally {
-      setPredictingMatchId(null);
+      setPredictingMatchId(null); // Reset the predicting match ID
     }
   };
 

@@ -6,6 +6,7 @@ export interface Feature {
   id: string;
   name: string;
   optional: boolean;
+  default?: number;
   minimum?: number;
   maximum?: number;
   prefix?: string;
