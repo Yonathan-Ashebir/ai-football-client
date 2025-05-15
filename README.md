@@ -1,6 +1,6 @@
 # AI-Powered Match Outcome and Player Position Prediction - Client App
 
-Welcome to the **AI-Powered Match Outcome and Player Position Prediction** client-side application! This repository hosts the front-end code for interacting with our AI models. We aim to provide a seamless user experience while encouraging community-driven development to enhance the platform.
+Welcome to the *AI-Powered Match Outcome and Player Position Prediction* client-side application! This repository hosts the front-end code for interacting with our AI models. We aim to provide a seamless user experience while encouraging community-driven development to enhance the platform.
 ([preview](./docs/preview.md))
 ---
 
